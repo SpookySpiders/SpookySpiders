@@ -11,12 +11,13 @@ let photos = []; // Store the three photos
 let photoTaken = false;
 
 // Initialize camera
-navigator.mediaDevices.getUserMedia({ video: true })
+navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } }) // Ensure front camera is used
   .then(stream => {
     video.srcObject = stream;
   })
   .catch(err => {
     console.error("Error accessing camera: ", err);
+    alert("Could not access camera. Please allow camera access in your browser settings.");
   });
 
 // Countdown before taking a photo
@@ -73,7 +74,7 @@ function createCollage() {
 // Save photo and upload to Google Drive
 savePhotoButton.addEventListener('click', () => {
     if (photoTaken) {
-        const imageData = canvas.toDataURL();
+        const imageData = canvas.toDataURL('image/png'); // Ensure the correct format
         uploadToDrive(imageData);
     }
 });
@@ -94,8 +95,8 @@ function uploadToDrive(imageData) {
 
     function initClient() {
         gapi.client.init({
-            apiKey: 'AIzaSyB714HMCg52XzNm2aXnZOvFJhH4SM0gXww',
-            clientId: '121891098679-ur6k1fpgoq3flcb9g41gbs3btvndi2gd.apps.googleusercontent.com',
+            apiKey: 'AIzaSyB714HMCg52XzNm2aXnZOvFJhH4SM0gXww', // Your API key
+            clientId: '121891098679-ur6k1fpgoq3flcb9g41gbs3btvndi2gd.apps.googleusercontent.com', // Your client ID
             discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
             scope: 'https://www.googleapis.com/auth/drive.file'
         }).then(() => {
@@ -104,31 +105,31 @@ function uploadToDrive(imageData) {
             const boundary = '-------314159265358979323846';
             const delimiter = "\r\n--" + boundary + "\r\n";
             const close_delim = "\r\n--" + boundary + "--";
-            const contentType = 'image/png';
             const metadata = {
                 'name': 'spooky-photo.png',
-                'mimeType': contentType,
+                'mimeType': 'image/png',
                 'parents': ['1hQp5hQ-lo2vCOOZCH2VOvi1uIaqzEFAV'] // Set folder to upload the image
             };
             const multipartRequestBody =
                 delimiter + 'Content-Type: application/json\r\n\r\n' +
                 JSON.stringify(metadata) +
-                delimiter + 'Content-Type: ' + contentType + '\r\n' + '\r\n' +
+                delimiter + 'Content-Type: image/png\r\n\r\n' +
                 imageData.split(',')[1] +
                 close_delim;
 
             gapi.client.request({
                 'path': '/upload/drive/v3/files?uploadType=multipart',
                 'method': 'POST',
-                'params': { 'uploadType': 'multipart' },
                 'headers': {
                     'Content-Type': 'multipart/related; boundary="' + boundary + '"'
                 },
                 'body': multipartRequestBody
             }).then((response) => {
                 console.log('Image uploaded:', response);
+                alert('Photo uploaded successfully!');
             }, (error) => {
                 console.error('Error uploading image:', error);
+                alert('Upload failed. Please try again.');
             });
         });
     }
