@@ -14,32 +14,34 @@ let photos = [];
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         video.srcObject = stream;
+
+        // Set canvas size to match video size for better quality
+        video.onloadedmetadata = () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+        };
     })
     .catch(err => {
         console.error("Error accessing camera: ", err);
     });
 
 takePhotoButton.addEventListener('click', async () => {
-    countdownDisplay.innerHTML = '3...';
+    // Countdown before taking a picture
+    countdownDisplay.style.display = 'block'; // Show countdown
+    for (let i = 3; i > 0; i--) {
+        countdownDisplay.innerHTML = i;
+        await sleep(1000);
+    }
+    countdownDisplay.innerHTML = 'Say Cheese!'; // Final message
     await sleep(1000);
-    countdownDisplay.innerHTML = '2...';
-    await sleep(1000);
-    countdownDisplay.innerHTML = '1...';
-    await sleep(1000);
-    countdownDisplay.innerHTML = 'Say Cheese!';
-    
-    // Flash effect
-    canvas.style.display = 'none';
-    setTimeout(() => {
-        canvas.style.display = 'block';
-    }, 100);
+    countdownDisplay.style.display = 'none'; // Hide countdown
 
     // Take the photo
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const photoDataUrl = canvas.toDataURL('image/png');
+    const photoDataUrl = canvas.toDataURL('image/png', 1.0); // Quality set to 1.0 for maximum quality
     photos.push(photoDataUrl);
     photoCount++;
-    
+
     // Create collage if we have 3 photos
     if (photoCount === 3) {
         createCollage();
@@ -58,19 +60,21 @@ function createCollage() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(collageTemplate, 0, 0, canvas.width, canvas.height);
 
-        // Draw the three photos in specified positions (you'll need to adjust these positions)
-        for (let i = 0; i < 3; i++) {
+        // Draw the three photos in specified positions (adjust as needed)
+        const positions = [
+            { x: 20, y: 20, width: 150, height: 150 }, // First photo position
+            { x: 200, y: 20, width: 150, height: 150 }, // Second photo position
+            { x: 110, y: 200, width: 150, height: 150 }  // Third photo position
+        ];
+
+        photos.forEach((photo, index) => {
             const img = new Image();
-            img.src = photos[i];
+            img.src = photo;
             img.onload = () => {
-                const x = /* Define x position for photo i */;
-                const y = /* Define y position for photo i */;
-                const width = /* Define width for photo i */;
-                const height = /* Define height for photo i */;
-                context.drawImage(img, x, y, width, height);
+                context.drawImage(img, positions[index].x, positions[index].y, positions[index].width, positions[index].height);
             };
-        }
-        
+        });
+
         // Draw overlay
         context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
     };
@@ -84,7 +88,7 @@ function sleep(ms) {
 // Save photo function (modify according to your saving logic)
 savePhotoButton.addEventListener('click', () => {
     const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
+    link.href = canvas.toDataURL('image/png', 1.0); // Quality set to 1.0
     link.download = 'collage.png';
     link.click();
 });
