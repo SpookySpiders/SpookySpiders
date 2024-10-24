@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Halloween Photobooth</title>
+    <title>Spooky Halloween Photobooth</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet"> <!-- Spooky Font -->
     <script src="https://apis.google.com/js/api.js"></script> <!-- Google API -->
 </head>
 <body>
-    <h1>Halloween Photobooth</h1>
+    <h1>Spooky Halloween Photobooth</h1>
 
     <div class="photobooth">
         <video id="camera" autoplay playsinline></video>
         <canvas id="canvas"></canvas>
-        <img id="overlay" src="image2.jpg" alt="Halloween Frame" style="display:none;">
-        <div id="countdown"></div> <!-- Countdown display -->
+        <img id="overlay" src="images/image2.png" alt="Halloween Frame" style="display:none;"> <!-- Ensure correct path -->
+        <div id="countdown" style="font-size: 3rem; color: #ff7518;"></div> <!-- Countdown display -->
     </div>
 
     <div class="controls">
