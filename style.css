@@ -110,3 +110,22 @@ video, canvas {
         font-size: 2rem; /* Keep headline size manageable */
     }
 }
+footer {
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
+    color: #ff7518; /* Halloween orange */
+    padding: 10px 0;
+    position: relative; /* Adjust as necessary */
+    bottom: 0;
+    width: 100%; /* Full width */
+    text-align: center; /* Center text */
+}
+
+footer a {
+    color: #ff7518; /* Link color */
+    text-decoration: none; /* Remove underline */
+}
+
+footer a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
