@@ -12,23 +12,32 @@ let photoTaken = false;
 
 // Initialize camera
 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
-    .then(stream => {
-        video.srcObject = stream;
-    })
-    .catch(err => {
-        console.error("Error accessing camera: ", err);
-        alert("Could not access camera. Please allow camera access in your browser settings.");
-    });
+  .then(stream => {
+    video.srcObject = stream;
+  })
+  .catch(err => {
+    console.error("Error accessing camera: ", err);
+    alert("Could not access camera. Please allow camera access in your browser settings.");
+  });
 
 // Countdown before taking a photo
 function countdown(seconds, callback) {
     countdownElement.innerText = seconds;
+    countdownElement.style.display = 'block'; // Show countdown
     if (seconds > 0) {
         setTimeout(() => countdown(seconds - 1, callback), 1000);
     } else {
-        countdownElement.innerText = ''; // Hide countdown
+        countdownElement.innerText = '';
         callback();
     }
+}
+
+// Flash effect
+function flash() {
+    document.body.style.backgroundColor = 'white'; // Flash white
+    setTimeout(() => {
+        document.body.style.backgroundColor = 'black'; // Return to black
+    }, 100);
 }
 
 // Take three photos with a delay between them
@@ -38,6 +47,7 @@ takePhotoButton.addEventListener('click', () => {
     function takeNextPhoto() {
         if (photoIndex < 3) {
             countdown(3, () => {
+                flash(); // Flash before taking a photo
                 const photoCanvas = document.createElement('canvas');
                 photoCanvas.width = canvas.width;
                 photoCanvas.height = canvas.height;
@@ -55,16 +65,28 @@ takePhotoButton.addEventListener('click', () => {
     takeNextPhoto();
 });
 
-// Create the collage of three photos
+// Create the collage of three photos in predefined spaces
 function createCollage() {
     ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-    let collageHeight = canvas.height / 3; // Divide canvas into three sections
+    
+    // Define positions and dimensions for each photo in the collage
+    const positions = [
+        { x: 10, y: 10, width: canvas.width / 3 - 20, height: canvas.height / 2 - 20 },
+        { x: canvas.width / 3 + 10, y: 10, width: canvas.width / 3 - 20, height: canvas.height / 2 - 20 },
+        { x: 10, y: canvas.height / 2 + 10, width: canvas.width - 20, height: canvas.height / 2 - 20 },
+    ];
 
     photos.forEach((photo, index) => {
-        ctx.drawImage(photo, 0, collageHeight * index, canvas.width, collageHeight);
+        ctx.drawImage(photo, positions[index].x, positions[index].y, positions[index].width, positions[index].height);
     });
 
-    ctx.drawImage(overlay, 0, 0, canvas.width, canvas.height); // Add overlay
+    // Overlay the decorative border
+    const borderImage = new Image();
+    borderImage.src = 'images/image2.png'; // Path to your decorative border image
+    borderImage.onload = () => {
+        ctx.drawImage(borderImage, 0, 0, canvas.width, canvas.height); // Draw the overlay
+    };
+
     photoTaken = true;
     savePhotoButton.disabled = false;
     resetPhotoButton.disabled = false;
@@ -76,8 +98,12 @@ savePhotoButton.addEventListener('click', () => {
     if (photoTaken) {
         const imageData = canvas.toDataURL('image/png'); // Ensure the correct format
         uploadToDrive(imageData);
-    } else {
-        alert('No photo taken. Please take photos first.');
+        
+        // Optionally, save the image to the user's device
+        const link = document.createElement('a');
+        link.href = imageData;
+        link.download = 'spooky-collage.png'; // File name for download
+        link.click(); // Trigger download
     }
 });
 
@@ -89,29 +115,29 @@ resetPhotoButton.addEventListener('click', () => {
     savePhotoButton.disabled = true;
     resetPhotoButton.disabled = true;
     takePhotoButton.disabled = false;
+    countdownElement.style.display = 'none'; // Hide countdown
 });
 
-// Google Drive API upload
+// Google Drive API upload (same as before)
 function uploadToDrive(imageData) {
     gapi.load('client:auth2', initClient);
 
     function initClient() {
         gapi.client.init({
-            apiKey: 'AIzaSyB714HMCg52XzNm2aXnZOvFJhH4SM0gXww', // Your API key
-            clientId: '121891098679-ur6k1fpgoq3flcb9g41gbs3btvndi2gd.apps.googleusercontent.com', // Your client ID
+            apiKey: 'YOUR_API_KEY', // Your API key
+            clientId: 'YOUR_CLIENT_ID', // Your client ID
             discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
             scope: 'https://www.googleapis.com/auth/drive.file'
         }).then(() => {
-            // Sign in if not already signed in
             return gapi.auth2.getAuthInstance().signIn();
         }).then(() => {
             const boundary = '-------314159265358979323846';
             const delimiter = "\r\n--" + boundary + "\r\n";
             const close_delim = "\r\n--" + boundary + "--";
             const metadata = {
-                'name': `spooky-photo-${Date.now()}.png`, // Unique file name with timestamp
+                'name': 'spooky-collage.png',
                 'mimeType': 'image/png',
-                'parents': ['1hQp5hQ-lo2vCOOZCH2VOvi1uIaqzEFAV'] // Set folder to upload the image
+                'parents': ['YOUR_FOLDER_ID'] // Set folder to upload the image
             };
             const multipartRequestBody =
                 delimiter + 'Content-Type: application/json\r\n\r\n' +
@@ -120,24 +146,20 @@ function uploadToDrive(imageData) {
                 imageData.split(',')[1] +
                 close_delim;
 
-            // Make the request to upload the image
-            return gapi.client.request({
+            gapi.client.request({
                 'path': '/upload/drive/v3/files?uploadType=multipart',
                 'method': 'POST',
                 'headers': {
                     'Content-Type': 'multipart/related; boundary="' + boundary + '"'
                 },
                 'body': multipartRequestBody
+            }).then((response) => {
+                console.log('Image uploaded:', response);
+                alert('Photo uploaded successfully!');
+            }, (error) => {
+                console.error('Error uploading image:', error);
+                alert('Upload failed. Please try again.');
             });
-        }).then((response) => {
-            console.log('Image uploaded:', response);
-            alert('Photo uploaded successfully!');
-        }, (error) => {
-            console.error('Error uploading image:', error);
-            alert('Upload failed. Please try again.');
-        }).catch(err => {
-            console.error('Error during GAPI initialization:', err);
-            alert('An error occurred while initializing Google API.');
         });
     }
 }
