@@ -18,10 +18,10 @@ body {
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between; /* Distribute space between content and footer */
     align-items: center;
     padding: 10px; /* Adjusted padding for mobile */
-    overflow: hidden; /* Prevent scrolling */
+    height: 100vh; /* Full viewport height */
 }
 
 /* Responsive Headline */
@@ -110,22 +110,13 @@ video, canvas {
         font-size: 2rem; /* Keep headline size manageable */
     }
 }
+
+/* Footer Styling */
 footer {
     background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
     color: #ff7518; /* Halloween orange */
-    padding: 10px 0;
-    position: relative; /* Adjust as necessary */
-    bottom: 0;
+    padding: 20px 0; /* Add padding for spacing */
     width: 100%; /* Full width */
     text-align: center; /* Center text */
+    z-index: 100; /* Ensure it is above other elements */
 }
-
-footer a {
-    color: #ff7518; /* Link color */
-    text-decoration: none; /* Remove underline */
-}
-
-footer a:hover {
-    text-decoration: underline; /* Underline on hover */
-}
-
