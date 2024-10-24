@@ -2,103 +2,113 @@ const video = document.getElementById('camera');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const countdownDisplay = document.getElementById('countdown');
-const takePhotoButton = document.getElementById('take-photo');
-const savePhotoButton = document.getElementById('save-photo');
-const resetPhotoButton = document.getElementById('reset-photo');
-const overlay = document.getElementById('overlay');
+let imagesTaken = [];
+const totalImages = 3; // Number of images to take
+let imageIndex = 0; // Keep track of the number of images taken
 
-let photoCount = 0;
-let photos = [];
-
-// Start the camera
+// Set up the camera
 navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
+    .then((stream) => {
         video.srcObject = stream;
-
-        // Set canvas size to match video size for better quality
-        video.onloadedmetadata = () => {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-        };
+        video.play();
     })
-    .catch(err => {
+    .catch((err) => {
         console.error("Error accessing camera: ", err);
     });
 
-takePhotoButton.addEventListener('click', async () => {
-    // Countdown before taking a picture
+// Countdown function
+function startCountdown() {
     countdownDisplay.style.display = 'block'; // Show countdown
-    for (let i = 3; i > 0; i--) {
-        countdownDisplay.innerHTML = i;
-        await sleep(1000);
+    let count = totalImages;
+    
+    const countdownInterval = setInterval(() => {
+        if (count > 0) {
+            countdownDisplay.innerText = count; // Update countdown
+            count--;
+        } else {
+            countdownDisplay.innerText = "Say Cheese!";
+            clearInterval(countdownInterval);
+            setTimeout(takePhoto, 1000); // Delay before taking the photo
+        }
+    }, 1000);
+}
+
+// Take photo function
+function takePhoto() {
+    if (imageIndex < totalImages) {
+        canvas.width = 640; // Set desired width for better quality
+        canvas.height = 480; // Set desired height for better quality
+        context.drawImage(video, 0, 0, canvas.width, canvas.height); // Draw the video frame to canvas
+
+        // Add to imagesTaken array
+        imagesTaken.push(canvas.toDataURL('image/png')); // Save image as PNG
+
+        // Flash effect
+        flashEffect();
+
+        imageIndex++;
+
+        if (imageIndex < totalImages) {
+            startCountdown(); // Start the countdown again for the next photo
+        } else {
+            setTimeout(() => {
+                createCollage(); // Create collage after the last photo
+            }, 1000);
+        }
     }
-    countdownDisplay.innerHTML = 'Say Cheese!'; // Final message
-    await sleep(1000);
-    countdownDisplay.style.display = 'none'; // Hide countdown
+}
 
-    // Take the photo
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const photoDataUrl = canvas.toDataURL('image/png', 1.0); // Quality set to 1.0 for maximum quality
-    photos.push(photoDataUrl);
-    photoCount++;
+// Flash effect function
+function flashEffect() {
+    const flash = document.createElement('div');
+    flash.style.position = 'absolute';
+    flash.style.top = 0;
+    flash.style.left = 0;
+    flash.style.width = '100%';
+    flash.style.height = '100%';
+    flash.style.backgroundColor = 'white';
+    flash.style.opacity = '0.7';
+    flash.style.transition = 'opacity 0.5s';
+    document.body.appendChild(flash);
+    setTimeout(() => {
+        flash.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(flash);
+        }, 500);
+    }, 100);
+}
 
-    // Create collage if we have 3 photos
-    if (photoCount === 3) {
-        createCollage();
-    }
-
-    // Enable save button
-    savePhotoButton.disabled = false;
-    resetPhotoButton.disabled = false;
-});
-
-// Create collage from photos
+// Create collage function
 function createCollage() {
-    const collageTemplate = new Image();
-    collageTemplate.src = 'images/image1.png'; // Your collage template
-    collageTemplate.onload = () => {
+    const collageImage = new Image();
+    collageImage.src = 'images/image1.jpg'; // Base image
+    collageImage.onload = () => {
+        // Draw the collage base
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(collageTemplate, 0, 0, canvas.width, canvas.height);
+        context.drawImage(collageImage, 0, 0, canvas.width, canvas.height);
 
-        // Draw the three photos in specified positions (adjust as needed)
-        const positions = [
-            { x: 20, y: 20, width: 150, height: 150 }, // First photo position
-            { x: 200, y: 20, width: 150, height: 150 }, // Second photo position
-            { x: 110, y: 200, width: 150, height: 150 }  // Third photo position
-        ];
-
-        photos.forEach((photo, index) => {
+        // Draw captured images on specific spots in the collage
+        imagesTaken.forEach((imgSrc, index) => {
             const img = new Image();
-            img.src = photo;
+            img.src = imgSrc;
             img.onload = () => {
-                context.drawImage(img, positions[index].x, positions[index].y, positions[index].width, positions[index].height);
+                const x = (index % 2) * (canvas.width / 2); // Example positions
+                const y = Math.floor(index / 2) * (canvas.height / 2);
+                context.drawImage(img, x + 20, y + 20, 100, 100); // Position and size
             };
         });
 
-        // Draw overlay
-        context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+        // Overlay the decorative border
+        const borderImage = new Image();
+        borderImage.src = 'images/image2.jpg'; // Decorative border image
+        borderImage.onload = () => {
+            context.drawImage(borderImage, 0, 0, canvas.width, canvas.height);
+        };
+
+        // Save and upload functionality
+        // ... (Your upload code here)
     };
 }
 
-// Sleep function for countdown
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-// Save photo function (modify according to your saving logic)
-savePhotoButton.addEventListener('click', () => {
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png', 1.0); // Quality set to 1.0
-    link.download = 'collage.png';
-    link.click();
-});
-
-// Reset photos
-resetPhotoButton.addEventListener('click', () => {
-    photos = [];
-    photoCount = 0;
-    savePhotoButton.disabled = true;
-    resetPhotoButton.disabled = true;
-    countdownDisplay.innerHTML = '';
-});
-
+// Start the countdown when the button is clicked
+document.getElementById('take-photo').addEventListener('click', startCountdown);
