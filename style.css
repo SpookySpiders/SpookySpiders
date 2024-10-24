@@ -12,34 +12,34 @@ html, body {
 /* Body and Font Styling */
 body {
     background-color: black;
-    background-image: linear-gradient(to bottom, black, #5f259f); /* Black to purple */
-    font-family: 'UnifrakturMaguntia', cursive; /* Spooky Halloween font */
-    color: #ff7518; /* Halloween orange */
+    background-image: linear-gradient(to bottom, black, #5f259f);
+    font-family: 'UnifrakturMaguntia', cursive;
+    color: #ff7518;
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Distribute space between content and footer */
+    justify-content: center;
     align-items: center;
-    padding: 10px; /* Adjusted padding for mobile */
-    height: 100vh; /* Full viewport height */
+    padding: 10px;
+    overflow: hidden;
 }
 
-/* Responsive Headline */
-h1 {
-    font-size: 2rem; /* Adjusted font size for better mobile display */
+/* Countdown Style */
+.countdown {
+    font-size: 3rem;
     color: #ff7518;
-    margin-bottom: 10px; /* Reduced margin for better spacing */
     text-shadow: 2px 2px 4px #000;
+    display: none; /* Initially hidden */
 }
 
 /* Photobooth Area */
 .photobooth {
     position: relative;
-    width: 90vw; /* Full width for mobile */
-    max-width: 400px; /* Limit maximum width */
-    height: 50vh; /* Set height for photobooth */
-    max-height: 300px; /* Limit maximum height */
-    margin-bottom: 15px; /* Space below for buttons */
+    width: 90vw;
+    max-width: 400px;
+    height: 50vh;
+    max-height: 300px;
+    margin-bottom: 15px;
 }
 
 video, canvas {
@@ -49,30 +49,29 @@ video, canvas {
     width: 100%;
     height: 100%;
     border-radius: 10px;
-    object-fit: cover; /* Maintain aspect ratio without distortion */
+    object-fit: cover;
 }
 
 /* Button Styling */
 .controls {
     display: flex;
-    flex-direction: row; /* Horizontal button layout */
-    justify-content: center; /* Center buttons */
-    flex-wrap: wrap; /* Allow buttons to wrap */
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .controls button {
     background-color: #ff7518;
     color: white;
-    font-size: 1rem; /* Adjusted for better touch targets */
+    font-size: 1rem;
     border: none;
-    padding: 10px 15px; /* Adjusted padding */
-    margin: 5px; /* Reduced margin */
+    padding: 10px 15px;
+    margin: 5px;
     border-radius: 5px;
     cursor: pointer;
-    font-family: 'UnifrakturMaguntia', cursive;
-    transition: background-color 0.3s; /* Smooth transition for hover effect */
-    width: 30%; /* Responsive width for buttons */
-    min-width: 100px; /* Minimum width for touch targets */
+    transition: background-color 0.3s;
+    width: 30%;
+    min-width: 100px;
 }
 
 .controls button:disabled {
@@ -83,40 +82,12 @@ video, canvas {
     background-color: #ffa600;
 }
 
-/* Mobile Responsive Design */
-@media only screen and (max-width: 600px) {
-    .photobooth {
-        height: 40vh; /* Smaller height for portrait */
-    }
-
-    h1 {
-        font-size: 1.5rem; /* Smaller headline on mobile */
-    }
-
-    .controls button {
-        font-size: 0.9rem; /* Slightly smaller button text */
-        padding: 8px 12px; /* Adjusted padding */
-    }
-}
-
-/* Landscape Styles */
-@media only screen and (orientation: landscape) and (max-width: 600px) {
-    .photobooth {
-        height: 40vh; /* Height adjustment for landscape */
-        max-height: 200px; /* Limit height for landscape */
-    }
-
-    h1 {
-        font-size: 2rem; /* Keep headline size manageable */
-    }
-}
-
-/* Footer Styling */
+/* Footer Style */
 footer {
-    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black background */
-    color: #ff7518; /* Halloween orange */
-    padding: 20px 0; /* Add padding for spacing */
-    width: 100%; /* Full width */
-    text-align: center; /* Center text */
-    z-index: 100; /* Ensure it is above other elements */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #ff7518;
+    padding: 20px 0;
+    width: 100%;
+    text-align: center;
+    margin-top: auto;
 }
