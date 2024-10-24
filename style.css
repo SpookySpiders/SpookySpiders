@@ -38,6 +38,7 @@ h1 {
     max-width: 400px; /* Maximum width for larger screens */
     height: auto; /* Maintain aspect ratio */
     aspect-ratio: 3 / 4; /* Ensures a portrait ratio */
+    margin-bottom: 20px; /* Add space below photobooth */
 }
 
 video, canvas {
@@ -62,7 +63,7 @@ video, canvas {
 /* Button Styling */
 .controls {
     display: flex;
-    flex-direction: column; /* Stack buttons vertically on mobile */
+    flex-direction: column; /* Stack buttons vertically */
     align-items: center; /* Center buttons */
 }
 
@@ -90,6 +91,16 @@ video, canvas {
 
 /* Mobile Responsive Design */
 @media only screen and (max-width: 600px) {
+    .photobooth {
+        width: 95vw; /* Full width for small devices */
+        height: auto; /* Maintain aspect ratio */
+        max-height: 60vh; /* Limit height to avoid taking full screen */
+    }
+
+    video, canvas {
+        border-radius: 10px; /* Add border radius for aesthetics */
+    }
+
     h1 {
         font-size: 2.5rem; /* Smaller headline on mobile */
     }
@@ -97,11 +108,5 @@ video, canvas {
     .controls button {
         font-size: 1rem;
         padding: 8px 16px;
-    }
-
-    .photobooth {
-        width: 95vw; /* Full width for small devices */
-        height: auto; /* Maintain aspect ratio */
-        max-height: 80vh; /* Prevent overflow on smaller screens */
     }
 }
