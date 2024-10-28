@@ -1,16 +1,25 @@
 const video = document.getElementById('camera'); 
 const canvas = document.getElementById('canvas');
+const collageCanvas = document.getElementById('collageCanvas');
 const context = canvas.getContext('2d');
+const collageContext = collageCanvas.getContext('2d');
 const takePhotoButton = document.getElementById('take-photo');
 const savePhotoButton = document.getElementById('save-photo');
 const resetPhotoButton = document.getElementById('reset-photo');
 const countdownDisplay = document.getElementById('countdown');
+const collageDisplay = document.getElementById('collageDisplay');
 let imagesTaken = [];
 
 // Set canvas dimensions based on IMG_2043 background template size
 function setCanvasDimensions() {
     canvas.width = 1080;  // Set to the width of IMG_2043.PNG
     canvas.height = 1920; // Set to the height of IMG_2043.PNG
+}
+
+// Set collage canvas dimensions
+function setCollageDimensions() {
+    collageCanvas.width = 1080;  // Match the collage dimensions
+    collageCanvas.height = 1920;
 }
 
 // Initialize camera
@@ -24,15 +33,15 @@ function initializeCamera() {
 
 // Updated createCollage function to handle layering, cropping, and alignment
 function createCollage() {
-    setCanvasDimensions(); // Adjust canvas size
+    setCollageDimensions(); // Adjust collage canvas size
 
     // Load background image (IMG_2043.PNG)
     const background = new Image();
     background.src = 'IMG_2043.PNG';
 
     background.onload = () => {
-        // Draw the background on the canvas
-        context.drawImage(background, 0, 0, canvas.width, canvas.height);
+        // Draw the background on the collage canvas
+        collageContext.drawImage(background, 0, 0, collageCanvas.width, collageCanvas.height);
 
         // Define positions and sizes for images to match white spaces in IMG_2043.PNG
         const positions = [
@@ -52,7 +61,7 @@ function createCollage() {
                 const sh = height / scale;
                 const sx = (img.width - sw) / 2;
                 const sy = (img.height - sh) / 2;
-                context.drawImage(img, sx, sy, sw, sh, x, y, width, height);
+                collageContext.drawImage(img, sx, sy, sw, sh, x, y, width, height);
             };
         });
 
@@ -60,7 +69,8 @@ function createCollage() {
         const overlay = new Image();
         overlay.src = 'IMG_2042.PNG';
         overlay.onload = () => {
-            context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+            collageContext.drawImage(overlay, 0, 0, collageCanvas.width, collageCanvas.height);
+            collageDisplay.style.display = 'block'; // Show the collage
         };
     };
 }
@@ -103,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     savePhotoButton.addEventListener('click', () => {
         const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/jpeg'); // Save as JPG
+        link.href = collageCanvas.toDataURL('image/jpeg'); // Save as JPG
         link.download = 'collage.jpg';
         link.click();
         alert('Hold down on the image and choose "Add to Photos" to save directly.');
@@ -112,7 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
     resetPhotoButton.addEventListener('click', () => {
         imagesTaken = [];
         context.clearRect(0, 0, canvas.width, canvas.height);
+        collageContext.clearRect(0, 0, collageCanvas.width, collageCanvas.height); // Clear collage
         savePhotoButton.disabled = true;
         resetPhotoButton.disabled = true;
+        collageDisplay.style.display = 'none'; // Hide collage display
     });
 });
