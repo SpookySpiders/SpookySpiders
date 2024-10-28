@@ -9,25 +9,23 @@
 </head>
 <body>
     <h1>Spooky Halloween Photobooth</h1>
+
     <div class="photobooth">
         <video id="camera" autoplay playsinline></video>
         <canvas id="canvas" style="display: none;"></canvas>
         <div id="countdown" class="countdown"></div>
+        <img id="collage" style="display: none;" alt="Collage">
     </div>
-    
+
     <div class="controls">
         <button id="start-photobooth">Start Photobooth</button>
+        <button id="save-photo" style="display: none;">Save Image</button>
+        <button id="reset-photo" style="display: none;">Restart</button>
     </div>
 
-    <!-- Collage Display Section -->
-    <div id="collage-container" style="display: none;">
-        <img id="collage-image" src="" alt="Collage">
-        <div class="controls">
-            <button id="save-photo">Save to Photos</button>
-            <button id="restart-photo">Restart</button>
-        </div>
-    </div>
-
+    <footer>
+        <a href="privacy-policy.html">Privacy Policy</a>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>
