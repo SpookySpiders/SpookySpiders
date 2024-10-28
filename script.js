@@ -1,4 +1,4 @@
-const video = document.getElementById('video');
+const video = document.getElementById('camera'); 
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const takePhotoButton = document.getElementById('take-photo');
@@ -66,7 +66,8 @@ function createCollage() {
 }
 
 // Initialize camera and set up event listeners
-initializeCamera();
+document.addEventListener('DOMContentLoaded', () => {
+    initializeCamera();
 
 takePhotoButton.addEventListener('click', async () => {
     countdownDisplay.style.display = 'block';
