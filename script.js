@@ -9,10 +9,11 @@ const savePhotoButton = document.getElementById('save-photo');
 const restartPhotoButton = document.getElementById('restart-photo');
 let imagesTaken = [];
 
-// Set canvas size for collage layout (adjust for iPhone view).
+// Set canvas for collage layout dimensions (adjusted for Safari iPhone view)
 canvas.width = 1080;
 canvas.height = 1920;
 
+// Initialize the camera
 function initializeCamera() {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
@@ -21,81 +22,94 @@ function initializeCamera() {
         .catch(err => alert('Error accessing webcam: ' + err));
 }
 
-// Starts countdown, takes photos, and triggers collage generation
-async function startPhotoBooth() {
-    imagesTaken = [];
+// Start the photobooth process
+startButton.addEventListener('click', async () => {
+    imagesTaken = []; // Reset any previous photos
+
+    for (let i = 1; i <= 3; i++) {
+        await countdownAndCapturePhoto(i);
+    }
+
+    // Create and display the collage after all images are captured
+    createCollage();
+});
+
+// Countdown and photo capture function
+async function countdownAndCapturePhoto(photoNumber) {
+    countdownDisplay.style.display = 'block';
     for (let i = 3; i > 0; i--) {
         countdownDisplay.textContent = i;
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
     countdownDisplay.style.display = 'none';
 
-    // Capture photo
+    // Bright flash effect
+    document.body.style.backgroundColor = '#fff';
+    await new Promise(resolve => setTimeout(resolve, 100));
+    document.body.style.backgroundColor = 'black';
+
+    // Capture and store the photo
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    imagesTaken.push(canvas.toDataURL('image/jpeg'));
-    
-    if (imagesTaken.length < 3) {
-        startPhotoBooth();  // Continue countdown and photo capture if less than 3
-    } else {
-        generateCollage();
-    }
+    const imgData = canvas.toDataURL('image/jpeg', 0.8);
+    imagesTaken.push(imgData);
 }
 
-function generateCollage() {
+// Generate and display the collage
+function createCollage() {
     context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Load the background template
     const background = new Image();
     background.src = 'IMG_2043.PNG';
+
     background.onload = () => {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        // Positions in Instagram Story layout format
+        // Positions for images to align with template
         const positions = [
             { x: 120, y: 200, width: 840, height: 500 },
             { x: 120, y: 750, width: 840, height: 500 },
             { x: 120, y: 1300, width: 840, height: 500 }
         ];
 
-        imagesTaken.forEach((image, index) => {
+        imagesTaken.forEach((imgData, index) => {
             const img = new Image();
-            img.src = image;
+            img.src = imgData;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                const scale = Math.max(width / img.width, height / img.height);
-                const sw = width / scale;
-                const sh = height / scale;
-                const sx = (img.width - sw) / 2;
-                const sy = (img.height - sh) / 2;
-                context.drawImage(img, sx, sy, sw, sh, x, y, width, height);
+                context.drawImage(img, x, y, width, height);
             };
         });
 
-        const overlay = new Image();
-        overlay.src = 'IMG_2042.PNG';
-        overlay.onload = () => {
-            context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
-            collageImage.src = canvas.toDataURL('image/jpeg');  // Show collage as JPEG
-            collageContainer.style.display = 'block';
-            video.style.display = 'none';
-            startButton.style.display = 'none';
-        };
+        setTimeout(displayCollage, 500); // Slight delay for Safari rendering
     };
 }
 
-startButton.addEventListener('click', () => {
-    initializeCamera();
-    startPhotoBooth();
-});
+// Display the final collage and hide the live camera view
+function displayCollage() {
+    // Convert canvas to a JPG
+    const finalImage = canvas.toDataURL('image/jpeg', 0.8);
+    collageImage.src = finalImage;
 
+    // Hide camera view and show collage
+    video.style.display = 'none';
+    countdownDisplay.style.display = 'none';
+    collageContainer.style.display = 'block';
+}
+
+// Save collage image
 savePhotoButton.addEventListener('click', () => {
     const link = document.createElement('a');
     link.href = collageImage.src;
-    link.download = 'collage.jpg';
+    link.download = 'Halloween_Collage.jpg';
     link.click();
+    alert('Hold down on the image and choose "Add to Photos" to save directly.');
 });
 
+// Restart photobooth
 restartPhotoButton.addEventListener('click', () => {
     collageContainer.style.display = 'none';
     video.style.display = 'block';
-    startButton.style.display = 'block';
-    initializeCamera();
+    imagesTaken = [];
 });
+document.addEventListener('DOMContentLoaded', initializeCamera);
