@@ -11,21 +11,16 @@
 <body>
     <h1>Spooky Halloween Photobooth</h1>
 
-    <div class="photobooth">
+    <div id="camera-view">
         <video id="camera" autoplay playsinline></video>
         <canvas id="canvas" style="display: none;"></canvas>
         <div id="countdown" class="countdown"></div>
     </div>
 
     <div class="controls">
-        <button id="take-photo">🧛 Take a Scary Photo 🕸️</button>
-        <button id="save-photo" disabled>🎃 Save to Photos 👻</button>
-        <button id="reset-photo" disabled>🔄 Start Over 🔪</button>
-    </div>
-
-    <div id="collageDisplay" style="display: none;">
-        <h2>Your Collage</h2>
-        <canvas id="collageCanvas"></canvas>
+        <button id="start-photobooth">🧛 Start Photobooth 🕸️</button>
+        <button id="save-photo" style="display: none;">🎃 Save Image 👻</button>
+        <button id="restart-photobooth" style="display: none;">🔄 Restart 🔪</button>
     </div>
 
     <footer>
