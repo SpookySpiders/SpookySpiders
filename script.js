@@ -60,12 +60,13 @@ function createCollage() {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
         const positions = [
-            { x: 120, y: 200, width: 840, height: 500 },
-            { x: 120, y: 750, width: 840, height: 500 },
-            { x: 120, y: 1240, width: 840, height: 500 }
+            { x: 120, y: 200, width: 840, height: 500 },   // First image position
+            { x: 120, y: 720, width: 840, height: 500 },   // Second image position (adjusted y)
+            { x: 120, y: 1240, width: 840, height: 500 }   // Third image position (adjusted y)
         ];
 
         let imagesLoaded = 0;
+
         imagesTaken.forEach((image, index) => {
             const img = new Image();
             img.src = image;
@@ -77,12 +78,31 @@ function createCollage() {
                 // Check if all images are loaded to draw the overlay
                 if (imagesLoaded === imagesTaken.length) {
                     drawOverlay();
-
                 }
             };
         });
     };
 }
+
+// Function to draw the overlay
+function drawOverlay() {
+    const overlay = new Image();
+    overlay.src = 'IMG_2042.PNG';
+    overlay.onload = () => {
+        context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+
+        const finalImage = canvas.toDataURL('image/jpeg');
+        collageImage.src = finalImage;
+        collageImage.style.display = 'block';
+
+        // Hide camera and show options
+        video.style.display = 'none';
+        startPhotoboothButton.style.display = 'none';
+        savePhotoButton.style.display = 'inline';
+        resetPhotoButton.style.display = 'inline';
+    };
+}
+
 
         const overlay = new Image();
         overlay.src = 'IMG_2042.PNG';
