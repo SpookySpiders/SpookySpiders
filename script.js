@@ -15,7 +15,7 @@ function setCanvasDimensions() {
 
 // Initialize camera
 function initializeCamera() {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }) // Use the front camera
+    navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
             video.srcObject = stream;
         })
@@ -70,26 +70,29 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCamera();
 
     takePhotoButton.addEventListener('click', async () => {
-        countdownDisplay.style.display = 'block';
+        imagesTaken = []; // Reset imagesTaken array
         for (let i = 3; i > 0; i--) {
+            countdownDisplay.style.display = 'block';
             countdownDisplay.textContent = i;
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
         countdownDisplay.style.display = 'none';
 
-        // Capture images and store them in imagesTaken array
-        imagesTaken = []; // Reset imagesTaken array
+        // Capture images
         for (let i = 0; i < 3; i++) {
+            // Capture current frame
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imgData = canvas.toDataURL('image/jpeg'); // Save as JPG
+            const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
-
-            // Show countdown for the next photo
+            
+            // Show countdown for next picture
             countdownDisplay.style.display = 'block';
-            for (let j = 3; j > 0; j--) {
-                countdownDisplay.textContent = j;
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
+            countdownDisplay.textContent = '3';
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            countdownDisplay.textContent = '2';
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            countdownDisplay.textContent = '1';
+            await new Promise(resolve => setTimeout(resolve, 1000));
             countdownDisplay.style.display = 'none';
         }
 
@@ -100,10 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     savePhotoButton.addEventListener('click', () => {
         const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/jpeg'); // Save final collage as JPG
+        link.href = canvas.toDataURL('image/jpeg'); // Save as JPG
         link.download = 'collage.jpg';
         link.click();
-        alert('Collage saved as a JPG!');
+        alert('Hold down on the image and choose "Add to Photos" to save directly.');
     });
 
     resetPhotoButton.addEventListener('click', () => {
