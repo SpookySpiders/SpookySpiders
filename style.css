@@ -24,12 +24,14 @@ body {
     overflow: hidden;
 }
 
-/* Countdown Style */
 .countdown {
-    font-size: 3rem;
-    color: #ff7518;
-    text-shadow: 2px 2px 4px #000;
-    display: none; /* Initially hidden */
+    font-size: 48px; /* Adjust as needed */
+    color: white;    /* Change to match your theme */
+    position: absolute;
+    top: 50%;        /* Center vertically */
+    left: 50%;       /* Center horizontally */
+    transform: translate(-50%, -50%);
+    display: none;   /* Hidden by default */
 }
 
 /* Photobooth Area */
