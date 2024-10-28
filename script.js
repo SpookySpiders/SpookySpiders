@@ -62,17 +62,27 @@ function createCollage() {
         const positions = [
             { x: 120, y: 200, width: 840, height: 500 },
             { x: 120, y: 750, width: 840, height: 500 },
-            { x: 120, y: 1300, width: 840, height: 500 }
+            { x: 120, y: 1240, width: 840, height: 500 }
         ];
 
+        let imagesLoaded = 0;
         imagesTaken.forEach((image, index) => {
             const img = new Image();
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                context.drawImage(img, 0, 0, canvas.width, canvas.height, x, y, width, height);
+                context.drawImage(img, x, y, width, height);
+                imagesLoaded++;
+
+                // Check if all images are loaded to draw the overlay
+                if (imagesLoaded === imagesTaken.length) {
+                    drawOverlay();
+
+                }
             };
         });
+    };
+}
 
         const overlay = new Image();
         overlay.src = 'IMG_2042.PNG';
