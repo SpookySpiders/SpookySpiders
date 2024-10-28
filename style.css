@@ -54,6 +54,19 @@ video, canvas {
     object-fit: cover;
 }
 
+/* Flash overlay */
+.flash-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.1s ease-out;
+}
+
 /* Button Styling */
 .controls {
     display: flex;
