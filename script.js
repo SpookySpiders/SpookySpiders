@@ -32,6 +32,7 @@ function createCollage() {
 
     background.onload = () => {
         // Draw the background on the canvas
+        context.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
         // Define positions and sizes for images to match white spaces in IMG_2043.PNG
@@ -47,11 +48,15 @@ function createCollage() {
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                const scale = Math.max(width / img.width, height / img.height); // Maintain aspect ratio
-                const sw = width / scale;
-                const sh = height / scale;
-                const sx = (img.width - sw) / 2;
-                const sy = (img.height - sh) / 2;
+                
+                // Calculate scaling to maintain aspect ratio
+                const scale = Math.min(width / img.width, height / img.height); 
+                const sw = img.width * scale; 
+                const sh = img.height * scale; 
+                const sx = (img.width - sw) / 2; 
+                const sy = (img.height - sh) / 2; 
+
+                // Draw the image at the specified position on the canvas
                 context.drawImage(img, sx, sy, sw, sh, x, y, width, height);
             };
         });
