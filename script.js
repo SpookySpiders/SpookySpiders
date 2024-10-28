@@ -43,7 +43,7 @@ takePhotoButton.addEventListener('click', async () => {
 
 function createCollage() {
     const collage = new Image();
-    collage.src = 'images/image1.png'; // Base image
+    collage.src = 'IMG_2043.PNG'; // Base image
     collage.onload = () => {
         context.drawImage(collage, 0, 0, canvas.width, canvas.height);
         imagesTaken.forEach((image, index) => {
@@ -57,7 +57,7 @@ function createCollage() {
         });
 
         const overlay = new Image();
-        overlay.src = 'images/image2.png'; // Decorative border
+        overlay.src = 'IMG_2042.PNG'; // Decorative border
         overlay.onload = () => {
             context.drawImage(overlay, 0, 0, canvas.width, canvas.height); // Overlay on top
         };
