@@ -71,7 +71,14 @@ video, canvas {
     object-fit: cover;
 }
 
-
+/* Collage image display */
+#collage {
+    width: 60vw; /* 60% of the viewport width */
+    max-width: 100%; /* Ensures it doesn't exceed available space */
+    border-radius: 10px;
+    margin-top: 20px;
+    display: block;
+}
 
 /* Button Styling */
 .controls {
