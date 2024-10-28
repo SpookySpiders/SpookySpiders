@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Capture images with countdown
         for (let i = 0; i < 3; i++) {
+            // Countdown before taking the picture
             for (let count = 3; count > 0; count--) {
                 countdownDisplay.textContent = count;
                 await new Promise(resolve => setTimeout(resolve, 1000));
@@ -84,9 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
 
-            // Clear the countdown display for the next round
+            // Hide countdown for a brief moment before the next one
             countdownDisplay.style.display = 'none';
-            countdownDisplay.style.display = 'block';
+            await new Promise(resolve => setTimeout(resolve, 500)); // Short pause before next countdown
+            countdownDisplay.style.display = 'block'; // Show countdown again
         }
 
         countdownDisplay.style.display = 'none'; // Hide countdown after all captures
