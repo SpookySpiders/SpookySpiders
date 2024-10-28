@@ -15,7 +15,7 @@ function setCanvasDimensions() {
 
 // Initialize camera
 function initializeCamera() {
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } }) // Use the front camera
         .then(stream => {
             video.srcObject = stream;
         })
@@ -70,22 +70,27 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCamera();
 
     takePhotoButton.addEventListener('click', async () => {
+        countdownDisplay.style.display = 'block';
+        for (let i = 3; i > 0; i--) {
+            countdownDisplay.textContent = i;
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        countdownDisplay.style.display = 'none';
+
+        // Capture images and store them in imagesTaken array
         imagesTaken = []; // Reset imagesTaken array
         for (let i = 0; i < 3; i++) {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imgData = canvas.toDataURL('image/jpeg'); // Save as JPG
+            imagesTaken.push(imgData);
+
+            // Show countdown for the next photo
             countdownDisplay.style.display = 'block';
-            for (let count = 3; count > 0; count--) {
-                countdownDisplay.textContent = count;
+            for (let j = 3; j > 0; j--) {
+                countdownDisplay.textContent = j;
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
             countdownDisplay.style.display = 'none';
-
-            // Capture the image
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imgData = canvas.toDataURL('image/png');
-            imagesTaken.push(imgData);
-
-            // Clear the canvas to show the live feed again
-            context.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         createCollage();
@@ -95,10 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     savePhotoButton.addEventListener('click', () => {
         const link = document.createElement('a');
-        link.href = canvas.toDataURL('image/png');
-        link.download = 'collage.png';
+        link.href = canvas.toDataURL('image/jpeg'); // Save final collage as JPG
+        link.download = 'collage.jpg';
         link.click();
-        alert('Hold down on the image and choose "Add to Photos" to save directly.');
+        alert('Collage saved as a JPG!');
     });
 
     resetPhotoButton.addEventListener('click', () => {
