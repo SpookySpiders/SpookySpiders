@@ -4,137 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Halloween Photobooth</title>
-    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 </head>
 <body>
     <h1>Spooky Halloween Photobooth</h1>
 
-    <div id="photobooth-container">
+    <div class="photobooth">
         <video id="camera" autoplay playsinline></video>
-        <canvas id="canvas" style="display: none;"></canvas>
+        <canvas id="canvas" style="display:none;"></canvas>
         <div id="countdown" class="countdown"></div>
     </div>
 
     <div class="controls">
         <button id="start-photobooth">Start Photobooth</button>
-        <button id="save-photo" style="display: none;">Save to Photos</button>
-        <button id="restart-photo" style="display: none;">Restart</button>
+        <div id="collage-container" style="display:none;">
+            <img id="collage-image" src="" alt="Collage" style="width:100%; max-width: 90vw; border: 2px solid #000;">
+            <button id="save-photo">Save to Photos</button>
+            <button id="restart-photo">Restart</button>
+        </div>
     </div>
 
-    <script>
-        const video = document.getElementById('camera');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const startButton = document.getElementById('start-photobooth');
-        const savePhotoButton = document.getElementById('save-photo');
-        const restartButton = document.getElementById('restart-photo');
-        const countdownDisplay = document.getElementById('countdown');
-        let imagesTaken = [];
-
-        // Set up canvas with Instagram story dimensions
-        function setCanvasDimensions() {
-            const aspectRatio = 9 / 16;
-            canvas.width = window.innerWidth * 0.9;  // Scaled down to fit on mobile
-            canvas.height = canvas.width * aspectRatio;
-        }
-
-        // Initialize camera
-        function initializeCamera() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                })
-                .catch(err => alert('Error accessing webcam: ' + err));
-        }
-
-        function captureImage() {
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL('image/jpeg');
-        }
-
-        // Generate collage and display it in the correct Instagram aspect ratio
-        function createCollage() {
-            setCanvasDimensions();
-            const background = new Image();
-            background.src = 'IMG_2043.PNG'; // Instagram story frame
-
-            background.onload = () => {
-                context.drawImage(background, 0, 0, canvas.width, canvas.height);
-
-                const positions = [
-                    { x: 100, y: 50, width: canvas.width - 200, height: canvas.height / 3 - 50 },
-                    { x: 100, y: canvas.height / 3 + 20, width: canvas.width - 200, height: canvas.height / 3 - 50 },
-                    { x: 100, y: (canvas.height / 3) * 2 + 40, width: canvas.width - 200, height: canvas.height / 3 - 50 },
-                ];
-
-                imagesTaken.forEach((image, index) => {
-                    const img = new Image();
-                    img.src = image;
-                    img.onload = () => {
-                        const { x, y, width, height } = positions[index];
-                        context.drawImage(img, x, y, width, height);
-                    };
-                });
-            };
-        }
-
-        // Start photobooth countdown and image capture
-        async function startPhotobooth() {
-            imagesTaken = [];
-            startButton.style.display = 'none';
-            setCanvasDimensions();
-
-            for (let i = 0; i < 3; i++) {
-                countdownDisplay.style.display = 'block';
-                for (let j = 3; j > 0; j--) {
-                    countdownDisplay.textContent = j;
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-                countdownDisplay.style.display = 'none';
-
-                // Flash effect
-                document.body.style.backgroundColor = 'white';
-                await new Promise(resolve => setTimeout(resolve, 100));
-                document.body.style.backgroundColor = 'black';
-
-                imagesTaken.push(captureImage());
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-
-            createCollage();
-            video.style.display = 'none';
-            canvas.style.display = 'block';
-            savePhotoButton.style.display = 'inline-block';
-            restartButton.style.display = 'inline-block';
-        }
-
-        startButton.addEventListener('click', () => {
-            initializeCamera();
-            startPhotobooth();
-        });
-
-        // Save the collage as JPEG
-        savePhotoButton.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/jpeg');
-            link.download = 'collage.jpg';
-            link.click();
-            alert('Hold down on the image and choose "Add to Photos" to save directly.');
-        });
-
-        // Restart photobooth
-        restartButton.addEventListener('click', () => {
-            imagesTaken = [];
-            video.style.display = 'block';
-            canvas.style.display = 'none';
-            savePhotoButton.style.display = 'none';
-            restartButton.style.display = 'none';
-            startButton.style.display = 'inline-block';
-            initializeCamera();
-        });
-
-        document.addEventListener('DOMContentLoaded', initializeCamera);
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
