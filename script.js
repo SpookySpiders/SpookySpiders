@@ -70,19 +70,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCamera();
 
     takePhotoButton.addEventListener('click', async () => {
-        imagesTaken = []; // Reset imagesTaken array
+        countdownDisplay.style.display = 'block';
+
+        // Capture images with countdown
         for (let i = 0; i < 3; i++) {
-            countdownDisplay.style.display = 'block';
-            for (let j = 3; j > 0; j--) {
-                countdownDisplay.textContent = j;
+            // Countdown before capturing each image
+            for (let count = 3; count > 0; count--) {
+                countdownDisplay.textContent = count;
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
             countdownDisplay.style.display = 'none';
 
-            // Capture the photo and store it in imagesTaken array
+            // Capture image
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
+
+            // Small delay before the next countdown (optional)
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
 
         createCollage();
