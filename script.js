@@ -42,27 +42,45 @@ takePhotoButton.addEventListener('click', async () => {
 });
 
 function createCollage() {
+    // Set canvas dimensions for Instagram Story
+    canvas.width = 1080;
+    canvas.height = 1920;
+    
+    // Load base template
     const collage = new Image();
-    collage.src = 'IMG_2043.PNG'; // Base image
+    collage.src = 'IMG_2043.PNG';
     collage.onload = () => {
+        // Draw the base template
         context.drawImage(collage, 0, 0, canvas.width, canvas.height);
+        
+        // Define the dimensions and positions for each photo to fit behind the white spaces
+        const photoWidth = 880;   // Adjust width to fit within each white section
+        const photoHeight = 470;  // Adjust height based on each white section
+        
+        const positions = [
+            { x: 100, y: 230 },   // Position for first image
+            { x: 100, y: 740 },   // Position for second image
+            { x: 100, y: 1250 }   // Position for third image
+        ];
+
+        // Draw each captured image in the specified positions
         imagesTaken.forEach((image, index) => {
             const img = new Image();
             img.src = image;
             img.onload = () => {
-                const x = (index % 3) * (canvas.width / 3); // Calculate x position
-                const y = (canvas.height / 2) - (canvas.height / 3); // Center vertically
-                context.drawImage(img, x, y, canvas.width / 3, canvas.height / 3); // Adjust size accordingly
+                context.drawImage(img, positions[index].x, positions[index].y, photoWidth, photoHeight);
             };
         });
 
+        // Load and overlay the decorative border
         const overlay = new Image();
-        overlay.src = 'IMG_2042.PNG'; // Decorative border
+        overlay.src = 'IMG_2042.PNG';
         overlay.onload = () => {
-            context.drawImage(overlay, 0, 0, canvas.width, canvas.height); // Overlay on top
+            context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
         };
     };
 }
+
 
 // Save photo functionality
 savePhotoButton.addEventListener('click', () => {
