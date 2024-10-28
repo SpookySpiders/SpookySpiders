@@ -1,20 +1,18 @@
 const video = document.getElementById('camera');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const startPhotoboothButton = document.getElementById('start-photobooth');
-const savePhotoButton = document.getElementById('save-photo');
-const resetPhotoButton = document.getElementById('reset-photo');
 const countdownDisplay = document.getElementById('countdown');
-const collageImage = document.getElementById('collage');
+const startButton = document.getElementById('start-photobooth');
+const collageContainer = document.getElementById('collage-container');
+const collageImage = document.getElementById('collage-image');
+const savePhotoButton = document.getElementById('save-photo');
+const restartPhotoButton = document.getElementById('restart-photo');
 let imagesTaken = [];
 
-// Set canvas dimensions based on the collage size
-function setCanvasDimensions() {
-    canvas.width = 1080;
-    canvas.height = 1920;
-}
+// Set canvas size for collage layout (adjust for iPhone view).
+canvas.width = 1080;
+canvas.height = 1920;
 
-// Initialize camera
 function initializeCamera() {
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
@@ -23,42 +21,34 @@ function initializeCamera() {
         .catch(err => alert('Error accessing webcam: ' + err));
 }
 
-// Function to handle the countdown, flash, and taking pictures
-async function startPhotoSequence() {
+// Starts countdown, takes photos, and triggers collage generation
+async function startPhotoBooth() {
     imagesTaken = [];
-    countdownDisplay.style.display = 'block';
-
-    for (let i = 0; i < 3; i++) {
-        for (let j = 3; j > 0; j--) {
-            countdownDisplay.textContent = j;
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        countdownDisplay.textContent = "";
-        document.body.style.backgroundColor = '#fff';
-        await new Promise(resolve => setTimeout(resolve, 100));
-        document.body.style.backgroundColor = 'black';
-
-        // Capture image from video
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        imagesTaken.push(canvas.toDataURL('image/png'));
-        await new Promise(resolve => setTimeout(resolve, 500));
+    for (let i = 3; i > 0; i--) {
+        countdownDisplay.textContent = i;
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
-
     countdownDisplay.style.display = 'none';
-    createCollage();
+
+    // Capture photo
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    imagesTaken.push(canvas.toDataURL('image/jpeg'));
+    
+    if (imagesTaken.length < 3) {
+        startPhotoBooth();  // Continue countdown and photo capture if less than 3
+    } else {
+        generateCollage();
+    }
 }
 
-// Create collage function
-function createCollage() {
-    setCanvasDimensions();
-
+function generateCollage() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
     const background = new Image();
     background.src = 'IMG_2043.PNG';
-
     background.onload = () => {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
+        // Positions in Instagram Story layout format
         const positions = [
             { x: 120, y: 200, width: 840, height: 500 },
             { x: 120, y: 750, width: 840, height: 500 },
@@ -70,7 +60,12 @@ function createCollage() {
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                context.drawImage(img, 0, 0, canvas.width, canvas.height, x, y, width, height);
+                const scale = Math.max(width / img.width, height / img.height);
+                const sw = width / scale;
+                const sh = height / scale;
+                const sx = (img.width - sw) / 2;
+                const sy = (img.height - sh) / 2;
+                context.drawImage(img, sx, sy, sw, sh, x, y, width, height);
             };
         });
 
@@ -78,42 +73,29 @@ function createCollage() {
         overlay.src = 'IMG_2042.PNG';
         overlay.onload = () => {
             context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
-
-            const finalImage = canvas.toDataURL('image/jpeg');
-            collageImage.src = finalImage;
-            collageImage.style.display = 'block';
-
-            // Hide camera and show options
+            collageImage.src = canvas.toDataURL('image/jpeg');  // Show collage as JPEG
+            collageContainer.style.display = 'block';
             video.style.display = 'none';
-            startPhotoboothButton.style.display = 'none';
-            savePhotoButton.style.display = 'inline';
-            resetPhotoButton.style.display = 'inline';
+            startButton.style.display = 'none';
         };
     };
 }
 
-// Event listeners
-document.addEventListener('DOMContentLoaded', () => {
+startButton.addEventListener('click', () => {
     initializeCamera();
+    startPhotoBooth();
+});
 
-    startPhotoboothButton.addEventListener('click', () => {
-        startPhotoSequence();
-    });
+savePhotoButton.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.href = collageImage.src;
+    link.download = 'collage.jpg';
+    link.click();
+});
 
-    savePhotoButton.addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.href = collageImage.src;
-        link.download = 'collage.jpg';
-        link.click();
-        alert('Hold down on the image and choose "Add to Photos" to save directly.');
-    });
-
-    resetPhotoButton.addEventListener('click', () => {
-        collageImage.style.display = 'none';
-        video.style.display = 'block';
-        savePhotoButton.style.display = 'none';
-        resetPhotoButton.style.display = 'none';
-        startPhotoboothButton.style.display = 'inline';
-        initializeCamera();
-    });
+restartPhotoButton.addEventListener('click', () => {
+    collageContainer.style.display = 'none';
+    video.style.display = 'block';
+    startButton.style.display = 'block';
+    initializeCamera();
 });
