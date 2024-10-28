@@ -1,4 +1,4 @@
-const video = document.getElementById('camera'); 
+const video = document.getElementById('camera');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const takePhotoButton = document.getElementById('take-photo');
@@ -15,7 +15,7 @@ function setCanvasDimensions() {
 
 // Initialize camera
 function initializeCamera() {
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
         .then(stream => {
             video.srcObject = stream;
         })
@@ -72,31 +72,25 @@ document.addEventListener('DOMContentLoaded', () => {
     takePhotoButton.addEventListener('click', async () => {
         countdownDisplay.style.display = 'block';
         
-        // Visual countdown
         for (let i = 3; i > 0; i--) {
             countdownDisplay.textContent = i;
             await new Promise(resolve => setTimeout(resolve, 1000));
         }
-        
+        countdownDisplay.textContent = 'Say Cheese!';
+        await new Promise(resolve => setTimeout(resolve, 1000));
         countdownDisplay.style.display = 'none';
+
+        document.body.style.backgroundColor = '#fff';
+        await new Promise(resolve => setTimeout(resolve, 100));
+        document.body.style.backgroundColor = 'black';
 
         // Capture images and store them in imagesTaken array
         imagesTaken = []; // Reset imagesTaken array
         for (let i = 0; i < 3; i++) {
-            // Brief pause for effect
-            countdownDisplay.style.display = 'block';
-            countdownDisplay.textContent = 'Taking photo in... 3';
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            countdownDisplay.textContent = 'Taking photo in... 2';
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            countdownDisplay.textContent = 'Taking photo in... 1';
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            countdownDisplay.style.display = 'none';
-
-            // Capture the image
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
+            await new Promise(resolve => setTimeout(resolve, 1000));
             alert(`Captured image ${i + 1}`);
         }
 
