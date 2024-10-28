@@ -49,7 +49,7 @@ async function startPhotoSequence() {
     createCollage();
 }
 
-// Ensure the collage displays in a smaller size with buttons underneath
+// Create collage with the images
 function createCollage() {
     setCanvasDimensions();
 
@@ -103,26 +103,6 @@ function drawOverlay() {
     };
 }
 
-
-        const overlay = new Image();
-        overlay.src = 'IMG_2042.PNG';
-        overlay.onload = () => {
-            context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
-
-            const finalImage = canvas.toDataURL('image/jpeg');
-            collageImage.src = finalImage;
-            collageImage.style.display = 'block';
-
-            // Hide camera and show options
-            video.style.display = 'none';
-            startPhotoboothButton.style.display = 'none';
-            savePhotoButton.style.display = 'inline';
-            resetPhotoButton.style.display = 'inline';
-        };
-    };
-}
-
-
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     initializeCamera();
@@ -145,6 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         savePhotoButton.style.display = 'none';
         resetPhotoButton.style.display = 'none';
         startPhotoboothButton.style.display = 'inline';
-        initializeCamera();
+        initializeCamera(); // Re-initialize the camera
     });
 });
