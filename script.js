@@ -7,12 +7,10 @@ const resetPhotoButton = document.getElementById('reset-photo');
 const countdownDisplay = document.getElementById('countdown');
 let imagesTaken = [];
 
-// Set up canvas dimensions dynamically based on viewport width
+// Set canvas dimensions based on IMG_2043 background template size
 function setCanvasDimensions() {
-    const storyWidth = Math.min(window.innerWidth, 1080); // max width 1080
-    const storyHeight = Math.round(storyWidth * (1920 / 1080)); // maintain aspect ratio
-    canvas.width = storyWidth;
-    canvas.height = storyHeight;
+    canvas.width = 1080;  // Set to the width of IMG_2043.PNG
+    canvas.height = 1920; // Set to the height of IMG_2043.PNG
 }
 
 // Initialize camera
@@ -24,49 +22,50 @@ function initializeCamera() {
         .catch(err => alert('Error accessing webcam: ' + err));
 }
 
-// Updated createCollage function with delays and dimensions adjustments
+// Updated createCollage function to handle layering, cropping, and alignment
 function createCollage() {
     setCanvasDimensions(); // Adjust canvas size
 
-    // Load base template
-    const collage = new Image();
-    collage.src = 'IMG_2043.PNG';
+    // Load background image (IMG_2043.PNG)
+    const background = new Image();
+    background.src = 'IMG_2043.PNG';
 
-    collage.onload = () => {
-        context.drawImage(collage, 0, 0, canvas.width, canvas.height);
+    background.onload = () => {
+        // Draw the background on the canvas
+        context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        // Define positions and sizes for images
-        const photoWidth = canvas.width * 0.8; // slightly smaller than canvas width
-        const photoHeight = canvas.height * 0.25; // adjust height for each section
+        // Define positions and sizes for images to match white spaces in IMG_2043.PNG
         const positions = [
-            { x: canvas.width * 0.1, y: canvas.height * 0.12 },
-            { x: canvas.width * 0.1, y: canvas.height * 0.4 },
-            { x: canvas.width * 0.1, y: canvas.height * 0.7 }
+            { x: 120, y: 200, width: 840, height: 500 },  // Position for the first image
+            { x: 120, y: 750, width: 840, height: 500 },  // Position for the second image
+            { x: 120, y: 1300, width: 840, height: 500 }  // Position for the third image
         ];
 
-        // Draw each captured image in the specified positions
+        // Draw each captured image with cropping to maintain aspect ratio
         imagesTaken.forEach((image, index) => {
             const img = new Image();
             img.src = image;
             img.onload = () => {
-                context.drawImage(img, positions[index].x, positions[index].y, photoWidth, photoHeight);
-                alert(`Image ${index + 1} loaded and drawn`);
+                const { x, y, width, height } = positions[index];
+                const scale = Math.max(width / img.width, height / img.height); // Maintain aspect ratio
+                const sw = width / scale;
+                const sh = height / scale;
+                const sx = (img.width - sw) / 2;
+                const sy = (img.height - sh) / 2;
+                context.drawImage(img, sx, sy, sw, sh, x, y, width, height);
             };
         });
 
-        // Load and overlay the decorative border
+        // Load and overlay the decorative border (IMG_2042.PNG)
         const overlay = new Image();
         overlay.src = 'IMG_2042.PNG';
         overlay.onload = () => {
             context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
-            alert('Overlay applied');
         };
     };
-
-    collage.onerror = () => alert('Failed to load base template');
 }
 
-// Set up camera and event listeners
+// Initialize camera and set up event listeners
 initializeCamera();
 
 takePhotoButton.addEventListener('click', async () => {
@@ -81,7 +80,7 @@ takePhotoButton.addEventListener('click', async () => {
     await new Promise(resolve => setTimeout(resolve, 100));
     document.body.style.backgroundColor = 'black';
 
-    // Capture images
+    // Capture images and store them in imagesTaken array
     imagesTaken = []; // Reset imagesTaken array
     for (let i = 0; i < 3; i++) {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -101,6 +100,7 @@ savePhotoButton.addEventListener('click', () => {
     link.href = canvas.toDataURL('image/png');
     link.download = 'collage.png';
     link.click();
+    alert('Hold down on the image and choose "Add to Photos" to save directly.');
 });
 
 resetPhotoButton.addEventListener('click', () => {
