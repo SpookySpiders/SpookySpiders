@@ -74,25 +74,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Capture images with countdown
         for (let i = 0; i < 3; i++) {
-            // Countdown before capturing each image
             for (let count = 3; count > 0; count--) {
                 countdownDisplay.textContent = count;
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
-            countdownDisplay.style.display = 'none';
 
             // Capture image
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
 
-            // Small delay before the next countdown (optional)
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // Clear the countdown display for the next round
+            countdownDisplay.style.display = 'none';
+            countdownDisplay.style.display = 'block';
         }
 
-        createCollage();
-        savePhotoButton.disabled = false;
-        resetPhotoButton.disabled = false;
+        countdownDisplay.style.display = 'none'; // Hide countdown after all captures
+        createCollage(); // Create the collage after capturing all images
+        savePhotoButton.disabled = false; // Enable save button
+        resetPhotoButton.disabled = false; // Enable reset button
     });
 
     savePhotoButton.addEventListener('click', () => {
