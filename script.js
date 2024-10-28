@@ -1,4 +1,4 @@
-const video = document.getElementById('camera');
+const video = document.getElementById('camera'); 
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const takePhotoButton = document.getElementById('take-photo');
@@ -32,7 +32,6 @@ function createCollage() {
 
     background.onload = () => {
         // Draw the background on the canvas
-        context.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
         // Define positions and sizes for images to match white spaces in IMG_2043.PNG
@@ -48,15 +47,11 @@ function createCollage() {
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                
-                // Calculate scaling to maintain aspect ratio
-                const scale = Math.min(width / img.width, height / img.height); 
-                const sw = img.width * scale; 
-                const sh = img.height * scale; 
-                const sx = (img.width - sw) / 2; 
-                const sy = (img.height - sh) / 2; 
-
-                // Draw the image at the specified position on the canvas
+                const scale = Math.max(width / img.width, height / img.height); // Maintain aspect ratio
+                const sw = width / scale;
+                const sh = height / scale;
+                const sx = (img.width - sw) / 2;
+                const sy = (img.height - sh) / 2;
                 context.drawImage(img, sx, sy, sw, sh, x, y, width, height);
             };
         });
@@ -75,31 +70,27 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCamera();
 
     takePhotoButton.addEventListener('click', async () => {
-        countdownDisplay.style.display = 'block';
-
-        // Capture images with countdown
+        imagesTaken = []; // Reset imagesTaken array
         for (let i = 0; i < 3; i++) {
-            // Countdown before taking the picture
+            countdownDisplay.style.display = 'block';
             for (let count = 3; count > 0; count--) {
                 countdownDisplay.textContent = count;
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
+            countdownDisplay.style.display = 'none';
 
-            // Capture image
+            // Capture the image
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
 
-            // Hide countdown for a brief moment before the next one
-            countdownDisplay.style.display = 'none';
-            await new Promise(resolve => setTimeout(resolve, 500)); // Short pause before next countdown
-            countdownDisplay.style.display = 'block'; // Show countdown again
+            // Clear the canvas to show the live feed again
+            context.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        countdownDisplay.style.display = 'none'; // Hide countdown after all captures
-        createCollage(); // Create the collage after capturing all images
-        savePhotoButton.disabled = false; // Enable save button
-        resetPhotoButton.disabled = false; // Enable reset button
+        createCollage();
+        savePhotoButton.disabled = false;
+        resetPhotoButton.disabled = false;
     });
 
     savePhotoButton.addEventListener('click', () => {
