@@ -1,66 +1,47 @@
-const video = document.getElementById('camera');
+const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const countdownDisplay = document.getElementById('countdown');
 const takePhotoButton = document.getElementById('take-photo');
 const savePhotoButton = document.getElementById('save-photo');
 const resetPhotoButton = document.getElementById('reset-photo');
-
+const countdownDisplay = document.getElementById('countdown');
 let imagesTaken = [];
 
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-        video.srcObject = stream;
-    })
-    .catch(err => console.error('Error accessing webcam:', err));
+// Set up canvas dimensions dynamically based on viewport width
+function setCanvasDimensions() {
+    const storyWidth = Math.min(window.innerWidth, 1080); // max width 1080
+    const storyHeight = Math.round(storyWidth * (1920 / 1080)); // maintain aspect ratio
+    canvas.width = storyWidth;
+    canvas.height = storyHeight;
+}
 
-takePhotoButton.addEventListener('click', async () => {
-    countdownDisplay.style.display = 'block';
-    for (let i = 3; i > 0; i--) {
-        countdownDisplay.textContent = i;
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Countdown delay
-    }
-    countdownDisplay.style.display = 'none';
+// Initialize camera
+function initializeCamera() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+        })
+        .catch(err => alert('Error accessing webcam: ' + err));
+}
 
-    // Flash effect
-    document.body.style.backgroundColor = '#fff'; // White flash
-    await new Promise(resolve => setTimeout(resolve, 100)); // Flash duration
-    document.body.style.backgroundColor = 'black'; // Revert back
-
-    // Capture images
-    for (let i = 0; i < 3; i++) {
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imgData = canvas.toDataURL('image/png'); // High quality
-        imagesTaken.push(imgData);
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait before next capture
-    }
-
-    // Create collage
-    createCollage();
-    savePhotoButton.disabled = false;
-    resetPhotoButton.disabled = false;
-});
-
+// Updated createCollage function with delays and dimensions adjustments
 function createCollage() {
-    // Set canvas dimensions for Instagram Story
-    canvas.width = 1080;
-    canvas.height = 1920;
-    
+    setCanvasDimensions(); // Adjust canvas size
+
     // Load base template
     const collage = new Image();
     collage.src = 'IMG_2043.PNG';
+
     collage.onload = () => {
-        // Draw the base template
         context.drawImage(collage, 0, 0, canvas.width, canvas.height);
-        
-        // Define the dimensions and positions for each photo to fit behind the white spaces
-        const photoWidth = 880;   // Adjust width to fit within each white section
-        const photoHeight = 470;  // Adjust height based on each white section
-        
+
+        // Define positions and sizes for images
+        const photoWidth = canvas.width * 0.8; // slightly smaller than canvas width
+        const photoHeight = canvas.height * 0.25; // adjust height for each section
         const positions = [
-            { x: 100, y: 230 },   // Position for first image
-            { x: 100, y: 740 },   // Position for second image
-            { x: 100, y: 1250 }   // Position for third image
+            { x: canvas.width * 0.1, y: canvas.height * 0.12 },
+            { x: canvas.width * 0.1, y: canvas.height * 0.4 },
+            { x: canvas.width * 0.1, y: canvas.height * 0.7 }
         ];
 
         // Draw each captured image in the specified positions
@@ -69,6 +50,7 @@ function createCollage() {
             img.src = image;
             img.onload = () => {
                 context.drawImage(img, positions[index].x, positions[index].y, photoWidth, photoHeight);
+                alert(`Image ${index + 1} loaded and drawn`);
             };
         });
 
@@ -77,12 +59,43 @@ function createCollage() {
         overlay.src = 'IMG_2042.PNG';
         overlay.onload = () => {
             context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
+            alert('Overlay applied');
         };
     };
+
+    collage.onerror = () => alert('Failed to load base template');
 }
 
+// Set up camera and event listeners
+initializeCamera();
 
-// Save photo functionality
+takePhotoButton.addEventListener('click', async () => {
+    countdownDisplay.style.display = 'block';
+    for (let i = 3; i > 0; i--) {
+        countdownDisplay.textContent = i;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+    countdownDisplay.style.display = 'none';
+
+    document.body.style.backgroundColor = '#fff';
+    await new Promise(resolve => setTimeout(resolve, 100));
+    document.body.style.backgroundColor = 'black';
+
+    // Capture images
+    imagesTaken = []; // Reset imagesTaken array
+    for (let i = 0; i < 3; i++) {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imgData = canvas.toDataURL('image/png');
+        imagesTaken.push(imgData);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        alert(`Captured image ${i + 1}`);
+    }
+
+    createCollage();
+    savePhotoButton.disabled = false;
+    resetPhotoButton.disabled = false;
+});
+
 savePhotoButton.addEventListener('click', () => {
     const link = document.createElement('a');
     link.href = canvas.toDataURL('image/png');
@@ -90,7 +103,6 @@ savePhotoButton.addEventListener('click', () => {
     link.click();
 });
 
-// Reset functionality
 resetPhotoButton.addEventListener('click', () => {
     imagesTaken = [];
     context.clearRect(0, 0, canvas.width, canvas.height);
