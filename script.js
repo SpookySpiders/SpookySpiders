@@ -10,15 +10,19 @@ const countdownDisplay = document.getElementById('countdown');
 const collageDisplay = document.getElementById('collageDisplay');
 let imagesTaken = [];
 
-// Set canvas dimensions based on IMG_2043 background template size
+// Create flash overlay dynamically
+const flashOverlay = document.createElement('div');
+flashOverlay.classList.add('flash-effect');
+document.body.appendChild(flashOverlay);
+
+// Set canvas dimensions
 function setCanvasDimensions() {
-    canvas.width = 1080;  // Set to the width of IMG_2043.PNG
-    canvas.height = 1920; // Set to the height of IMG_2043.PNG
+    canvas.width = 1080;
+    canvas.height = 1920;
 }
 
-// Set collage canvas dimensions
 function setCollageDimensions() {
-    collageCanvas.width = 1080;  // Match the collage dimensions
+    collageCanvas.width = 1080;
     collageCanvas.height = 1920;
 }
 
@@ -31,32 +35,35 @@ function initializeCamera() {
         .catch(err => alert('Error accessing webcam: ' + err));
 }
 
-// Updated createCollage function to handle layering, cropping, and alignment
-function createCollage() {
-    setCollageDimensions(); // Adjust collage canvas size
+// Flash effect function
+function triggerFlash() {
+    flashOverlay.style.opacity = '1';
+    setTimeout(() => {
+        flashOverlay.style.opacity = '0';
+    }, 100); // Flash duration (100ms for a quick effect)
+}
 
-    // Load background image (IMG_2043.PNG)
+// Updated createCollage function
+function createCollage() {
+    setCollageDimensions();
     const background = new Image();
     background.src = 'IMG_2043.PNG';
-
+    
     background.onload = () => {
-        // Draw the background on the collage canvas
         collageContext.drawImage(background, 0, 0, collageCanvas.width, collageCanvas.height);
 
-        // Define positions and sizes for images to match white spaces in IMG_2043.PNG
         const positions = [
-            { x: 120, y: 200, width: 840, height: 500 },  // Position for the first image
-            { x: 120, y: 750, width: 840, height: 500 },  // Position for the second image
-            { x: 120, y: 1300, width: 840, height: 500 }  // Position for the third image
+            { x: 120, y: 200, width: 840, height: 500 },
+            { x: 120, y: 750, width: 840, height: 500 },
+            { x: 120, y: 1300, width: 840, height: 500 }
         ];
 
-        // Draw each captured image with cropping to maintain aspect ratio
         imagesTaken.forEach((image, index) => {
             const img = new Image();
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                const scale = Math.max(width / img.width, height / img.height); // Maintain aspect ratio
+                const scale = Math.max(width / img.width, height / img.height);
                 const sw = width / scale;
                 const sh = height / scale;
                 const sx = (img.width - sw) / 2;
@@ -65,45 +72,39 @@ function createCollage() {
             };
         });
 
-        // Load and overlay the decorative border (IMG_2042.PNG)
         const overlay = new Image();
         overlay.src = 'IMG_2042.PNG';
         overlay.onload = () => {
             collageContext.drawImage(overlay, 0, 0, collageCanvas.width, collageCanvas.height);
-            collageDisplay.style.display = 'block'; // Show the collage
+            collageDisplay.style.display = 'block';
         };
     };
 }
 
-// Initialize camera and set up event listeners
+// Event listeners and photo-taking logic
 document.addEventListener('DOMContentLoaded', () => {
     initializeCamera();
 
     takePhotoButton.addEventListener('click', async () => {
-        imagesTaken = []; // Reset imagesTaken array
-        for (let i = 3; i > 0; i--) {
-            countdownDisplay.style.display = 'block';
-            countdownDisplay.textContent = i;
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-        countdownDisplay.style.display = 'none';
-
-        // Capture images
+        imagesTaken = [];
         for (let i = 0; i < 3; i++) {
-            // Capture current frame
+            // Countdown before each photo
+            for (let j = 3; j > 0; j--) {
+                countdownDisplay.style.display = 'block';
+                countdownDisplay.textContent = j;
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            countdownDisplay.style.display = 'none';
+
+            // Flash effect and capture image
+            triggerFlash();
+            await new Promise(resolve => setTimeout(resolve, 100)); // Brief delay for the flash effect
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
-            
-            // Show countdown for next picture
-            countdownDisplay.style.display = 'block';
-            countdownDisplay.textContent = '3';
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            countdownDisplay.textContent = '2';
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            countdownDisplay.textContent = '1';
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            countdownDisplay.style.display = 'none';
+
+            // Short delay before next countdown
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
 
         createCollage();
@@ -113,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     savePhotoButton.addEventListener('click', () => {
         const link = document.createElement('a');
-        link.href = collageCanvas.toDataURL('image/jpeg'); // Save as JPG
+        link.href = collageCanvas.toDataURL('image/jpeg');
         link.download = 'collage.jpg';
         link.click();
         alert('Hold down on the image and choose "Add to Photos" to save directly.');
@@ -122,9 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
     resetPhotoButton.addEventListener('click', () => {
         imagesTaken = [];
         context.clearRect(0, 0, canvas.width, canvas.height);
-        collageContext.clearRect(0, 0, collageCanvas.width, collageCanvas.height); // Clear collage
+        collageContext.clearRect(0, 0, collageCanvas.width, collageCanvas.height);
         savePhotoButton.disabled = true;
         resetPhotoButton.disabled = true;
-        collageDisplay.style.display = 'none'; // Hide collage display
+        collageDisplay.style.display = 'none';
     });
 });
