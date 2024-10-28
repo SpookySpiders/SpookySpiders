@@ -49,7 +49,7 @@ async function startPhotoSequence() {
     createCollage();
 }
 
-// Create collage function
+// Ensure the collage displays in a smaller size with buttons underneath
 function createCollage() {
     setCanvasDimensions();
 
@@ -91,6 +91,7 @@ function createCollage() {
         };
     };
 }
+
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
