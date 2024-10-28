@@ -15,7 +15,7 @@ function setCanvasDimensions() {
 
 // Initialize camera
 function initializeCamera() {
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+    navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
             video.srcObject = stream;
         })
@@ -70,28 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCamera();
 
     takePhotoButton.addEventListener('click', async () => {
-        countdownDisplay.style.display = 'block';
-        
-        for (let i = 3; i > 0; i--) {
-            countdownDisplay.textContent = i;
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-        countdownDisplay.textContent = 'Say Cheese!';
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        countdownDisplay.style.display = 'none';
-
-        document.body.style.backgroundColor = '#fff';
-        await new Promise(resolve => setTimeout(resolve, 100));
-        document.body.style.backgroundColor = 'black';
-
-        // Capture images and store them in imagesTaken array
         imagesTaken = []; // Reset imagesTaken array
         for (let i = 0; i < 3; i++) {
+            countdownDisplay.style.display = 'block';
+            for (let j = 3; j > 0; j--) {
+                countdownDisplay.textContent = j;
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            countdownDisplay.style.display = 'none';
+
+            // Capture the photo and store it in imagesTaken array
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imgData = canvas.toDataURL('image/png');
             imagesTaken.push(imgData);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            alert(`Captured image ${i + 1}`);
         }
 
         createCollage();
