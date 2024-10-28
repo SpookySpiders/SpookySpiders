@@ -9,9 +9,9 @@ const savePhotoButton = document.getElementById('save-photo');
 const restartPhotoButton = document.getElementById('restart-photo');
 let imagesTaken = [];
 
-// Set canvas for collage layout dimensions (adjusted for Safari iPhone view)
-canvas.width = 1080;
-canvas.height = 1920;
+// Set canvas for collage layout dimensions
+canvas.width = 1080; // Change as necessary for your collage
+canvas.height = 1920; // Change as necessary for your collage
 
 // Initialize the camera
 function initializeCamera() {
@@ -37,11 +37,12 @@ startButton.addEventListener('click', async () => {
 // Countdown and photo capture function
 async function countdownAndCapturePhoto(photoNumber) {
     countdownDisplay.style.display = 'block';
+    
+    // Show countdown while the live feed is visible
     for (let i = 3; i > 0; i--) {
         countdownDisplay.textContent = i;
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
-    countdownDisplay.style.display = 'none';
 
     // Bright flash effect
     document.body.style.backgroundColor = '#fff';
@@ -52,6 +53,8 @@ async function countdownAndCapturePhoto(photoNumber) {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imgData = canvas.toDataURL('image/jpeg', 0.8);
     imagesTaken.push(imgData);
+
+    countdownDisplay.style.display = 'none'; // Hide countdown after taking a photo
 }
 
 // Generate and display the collage
@@ -81,7 +84,8 @@ function createCollage() {
             };
         });
 
-        setTimeout(displayCollage, 500); // Slight delay for Safari rendering
+        // A slight delay before displaying the collage
+        setTimeout(displayCollage, 100); // Adjust this for smooth rendering
     };
 }
 
@@ -112,4 +116,5 @@ restartPhotoButton.addEventListener('click', () => {
     video.style.display = 'block';
     imagesTaken = [];
 });
+
 document.addEventListener('DOMContentLoaded', initializeCamera);
