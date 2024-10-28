@@ -73,11 +73,12 @@ video, canvas {
 
 /* Collage image display */
 #collage {
-    width: 40vw; /* 50% of the viewport width */
-    max-width: 100%; /* Ensures it doesn’t exceed available space */
-    margin: 20px auto; /* Centers the collage and adds space around */
+    display: none;
+    max-width: 40%; /* Make sure the image occupies only 60% of the screen */
+    height: auto;
+    margin: 0 auto; /* Center the collage */
+    margin-bottom: 10px; /* Add space below the image for buttons */
     border-radius: 10px;
-    display: block;
 }
 
 
