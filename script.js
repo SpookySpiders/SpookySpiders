@@ -57,13 +57,34 @@ function createCollage() {
     background.src = 'IMG_2043.PNG';
 
     background.onload = () => {
+        // Draw background first
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        const positions = [
-            { x: 120, y: 400, width: 600, height: 500 },   // First image position
-            { x: 120, y: 1000, width: 600, height: 500 },   // Second image position (adjusted y)
-            { x: 120, y: 1600, width: 600, height: 500 }   // Third image position (adjusted y)
-        ];
+        const collageWidth = canvas.width;
+        const collageHeight = canvas.height;
+        const imageWidth = collageWidth * 0.85;  // Each image will be 85% of the collage width
+        const imageSpacing = 20;  // Space between images
+        const topPadding = 50;    // Top padding
+        const bottomPadding = 50; // Bottom padding
+
+        // Calculate available space in top 3/4 of the canvas
+        const availableHeight = (collageHeight * 3 / 4) - topPadding - bottomPadding - (2 * imageSpacing);
+        const positions = [];
+
+        // Calculate height for each image to maintain aspect ratio
+        const imageHeight = availableHeight / 3;
+
+        // Calculate positions for each image
+        let yPos = topPadding;
+        for (let i = 0; i < 3; i++) {
+            positions.push({
+                x: (collageWidth - imageWidth) / 2, // Center horizontally
+                y: yPos,
+                width: imageWidth,
+                height: imageHeight,
+            });
+            yPos += imageHeight + imageSpacing;
+        }
 
         let imagesLoaded = 0;
 
@@ -78,14 +99,14 @@ function createCollage() {
                 const newWidth = img.width * scale;
                 const newHeight = img.height * scale;
 
-                // Center the image within the target slot
+                // Center image within its slot
                 const offsetX = x + (width - newWidth) / 2;
                 const offsetY = y + (height - newHeight) / 2;
 
                 context.drawImage(img, offsetX, offsetY, newWidth, newHeight);
                 imagesLoaded++;
 
-                // Check if all images are loaded to draw the overlay
+                // Draw overlay once all images are loaded
                 if (imagesLoaded === imagesTaken.length) {
                     drawOverlay();
                 }
@@ -93,6 +114,7 @@ function createCollage() {
         });
     };
 }
+
 
 // Function to draw the overlay
 function drawOverlay() {
