@@ -77,7 +77,7 @@ video, canvas {
     max-width: 55%; /* Make sure the image occupies only 60% of the screen */
     height: auto;
     margin: 0 auto; /* Center the collage */
-    margin-bottom: 10px; /* Add space below the image for buttons */
+    margin-bottom: 30px; /* Add space below the image for buttons */
     border-radius: 10px;
 }
 
