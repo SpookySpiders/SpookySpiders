@@ -49,7 +49,6 @@ async function startPhotoSequence() {
     createCollage();
 }
 
-// Create collage with the images
 function createCollage() {
     setCanvasDimensions();
 
@@ -57,34 +56,16 @@ function createCollage() {
     background.src = 'IMG_2043.PNG';
 
     background.onload = () => {
-        // Draw background first
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        const collageWidth = canvas.width;
-        const collageHeight = canvas.height;
-        const imageWidth = collageWidth * 0.85;  // Each image will be 85% of the collage width
-        const imageSpacing = 20;  // Space between images
-        const topPadding = 50;    // Top padding
-        const bottomPadding = 50; // Bottom padding
+        const targetWidth = canvas.width * 0.85; // 85% of canvas width for each image
+        const padding = 50; // Padding between images
 
-        // Calculate available space in top 3/4 of the canvas
-        const availableHeight = (collageHeight * 3 / 4) - topPadding - bottomPadding - (2 * imageSpacing);
-        const positions = [];
-
-        // Calculate height for each image to maintain aspect ratio
-        const imageHeight = availableHeight / 3;
-
-        // Calculate positions for each image
-        let yPos = topPadding;
-        for (let i = 0; i < 3; i++) {
-            positions.push({
-                x: (collageWidth - imageWidth) / 2, // Center horizontally
-                y: yPos,
-                width: imageWidth,
-                height: imageHeight,
-            });
-            yPos += imageHeight + imageSpacing;
-        }
+        const positions = [
+            { y: 100 },  // First image position (y coordinate)
+            { y: 100 + padding + 500 },  // Second image position (adjusted y coordinate)
+            { y: 100 + 2 * (padding + 500) }  // Third image position (adjusted y coordinate)
+        ];
 
         let imagesLoaded = 0;
 
@@ -92,21 +73,19 @@ function createCollage() {
             const img = new Image();
             img.src = image;
             img.onload = () => {
-                const { x, y, width, height } = positions[index];
-                
-                // Calculate scaling to maintain aspect ratio
-                const scale = Math.min(width / img.width, height / img.height);
+                // Maintain aspect ratio
+                const scale = targetWidth / img.width;
                 const newWidth = img.width * scale;
                 const newHeight = img.height * scale;
 
-                // Center image within its slot
-                const offsetX = x + (width - newWidth) / 2;
-                const offsetY = y + (height - newHeight) / 2;
+                // Calculate horizontal centering
+                const offsetX = (canvas.width - newWidth) / 2;
+                const { y } = positions[index];
 
-                context.drawImage(img, offsetX, offsetY, newWidth, newHeight);
+                context.drawImage(img, offsetX, y, newWidth, newHeight);
                 imagesLoaded++;
 
-                // Draw overlay once all images are loaded
+                // Check if all images are loaded to draw the overlay
                 if (imagesLoaded === imagesTaken.length) {
                     drawOverlay();
                 }
