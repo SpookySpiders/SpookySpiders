@@ -58,41 +58,40 @@ function createCollage() {
     background.onload = () => {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        const targetWidth = canvas.width * 0.85; // 85% of canvas width for each image
-        const padding = 50; // Padding between images
+        const targetWidth = canvas.width * 0.85; // 85% of canvas width
+        const padding = 30; // Padding between images
+        const startY = 100; // Starting y position for the first image
 
-        const positions = [
-            { y: 100 },  // First image position (y coordinate)
-            { y: 100 + padding + 500 },  // Second image position (adjusted y coordinate)
-            { y: 100 + 2 * (padding + 500) }  // Third image position (adjusted y coordinate)
-        ];
+        let currentY = startY;
 
-        let imagesLoaded = 0;
-
-        imagesTaken.forEach((image, index) => {
+        imagesTaken.forEach((imageSrc, index) => {
             const img = new Image();
-            img.src = image;
+            img.src = imageSrc;
+
             img.onload = () => {
-                // Maintain aspect ratio
-                const scale = targetWidth / img.width;
-                const newWidth = img.width * scale;
-                const newHeight = img.height * scale;
+                // Calculate scale based on width to maintain aspect ratio
+                const aspectRatio = img.width / img.height;
+                const displayWidth = targetWidth;
+                const displayHeight = displayWidth / aspectRatio;
 
-                // Calculate horizontal centering
-                const offsetX = (canvas.width - newWidth) / 2;
-                const { y } = positions[index];
+                // Calculate the x position to center the image horizontally
+                const offsetX = (canvas.width - displayWidth) / 2;
 
-                context.drawImage(img, offsetX, y, newWidth, newHeight);
-                imagesLoaded++;
+                // Draw the image at the current y position
+                context.drawImage(img, offsetX, currentY, displayWidth, displayHeight);
 
-                // Check if all images are loaded to draw the overlay
-                if (imagesLoaded === imagesTaken.length) {
+                // Update currentY for the next image, adding padding
+                currentY += displayHeight + padding;
+
+                // Draw overlay after the last image is loaded
+                if (index === imagesTaken.length - 1) {
                     drawOverlay();
                 }
             };
         });
     };
 }
+
 
 
 // Function to draw the overlay
