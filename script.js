@@ -60,9 +60,9 @@ function createCollage() {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
         const positions = [
-            { x: 177, y: 66, width: 535, height: 331 },  // First empty space
-            { x: 177, y: 397, width: 535, height: 331 }, // Second empty space
-            { x: 177, y: 728, width: 535, height: 332 }  // Third empty space
+            { x: 120, y: 250, width: 750, height: 500 },   // First image position
+            { x: 120, y: 800, width: 750, height: 500 },   // Second image position (adjusted y)
+            { x: 120, y: 1350, width: 750, height: 500 }   // Third image position (adjusted y)
         ];
 
         let imagesLoaded = 0;
