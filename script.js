@@ -75,11 +75,13 @@ function createCollage() {
                 // Calculate aspect ratio from the original video feed
                 const aspectRatio = img.width / img.height;
 
-                // Adjust width and height with a slight squeeze
+                // Adjust width and height without squeezing
                 const displayWidth = targetWidth;
                 const originalHeight = img.height;
-                const croppedHeight = originalHeight * 0.60; // Height after cropping top 40%
-                const displayHeight = (displayWidth / aspectRatio) * (croppedHeight / originalHeight); // Maintain aspect ratio after cropping
+                const croppedHeight = originalHeight * 0.60; // Keep the lower 60%
+                
+                // Calculate display height based on aspect ratio
+                const displayHeight = displayWidth / aspectRatio;
 
                 // Calculate the x position to center the image horizontally within canvas
                 const offsetX = (canvas.width - displayWidth) / 2;
