@@ -99,7 +99,7 @@ video, canvas {
 .controls button {
     background-color: #ff7518;
     color: white;
-    font-size: 2rem; /* Reduced font size */
+    font-size: 1.5rem; /* Reduced font size */
     font-family: 'UnifrakturMaguntia', cursive; /* Consistent font */
     border: none;
     padding: 10px; /* Reduced padding */
