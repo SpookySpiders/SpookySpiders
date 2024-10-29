@@ -13,7 +13,7 @@ html, body {
 body {
     background-color: black;
     background-image: linear-gradient(to bottom, black, #5f259f);
-    font-family: 'UnifrakturMaguntia', cursive;
+    font-family: 'UnifrakturMaguntia', cursive; /* Old font */
     color: #ff7518;
     text-align: center;
     display: flex;
@@ -26,7 +26,8 @@ body {
 
 /* Heading Style */
 h1 {
-    padding-bottom: 20px; /* Add padding underneath the heading */
+    padding-bottom: 10px; /* Reduced padding */
+    font-size: 2rem; /* Adjusted font size for mobile compatibility */
 }
 
 /* Countdown display */
@@ -62,7 +63,7 @@ h1 {
     max-width: 400px;
     height: 50vh;
     max-height: 300px;
-    margin-bottom: 40px; /* Increase this value for a wider gap */
+    margin-bottom: 20px; /* Adjusted for better spacing */
 }
 
 video, canvas {
@@ -91,22 +92,22 @@ video, canvas {
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 40px;
+    margin-top: 20px; /* Adjusted margin */
 }
 
 .controls button {
     background-color: #ff7518;
     color: white;
-    font-size: 1.5rem; /* Increase font size for more appeal */
-    font-family: 'Fredericka the Great', cursive; /* Change font to a more exciting style */
+    font-size: 1rem; /* Reduced font size */
+    font-family: 'UnifrakturMaguntia', cursive; /* Consistent font */
     border: none;
-    padding: 15px; /* Increase padding for better touch targets */
+    padding: 10px; /* Reduced padding */
     margin: 5px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 50%; /* Increase the width of the Start Photobooth button */
-    min-width: 200px; /* Minimum width for buttons */
+    width: 45%; /* Adjusted width for better appearance */
+    min-width: 150px; /* Minimum width for buttons */
 }
 
 .controls button:disabled {
@@ -121,7 +122,7 @@ video, canvas {
 footer {
     background-color: rgba(0, 0, 0, 0.8);
     color: #ff7518;
-    padding: 20px 0;
+    padding: 10px 0; /* Adjusted padding */
     width: 100%;
     text-align: center;
     margin-top: auto;
