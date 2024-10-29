@@ -58,7 +58,7 @@ function createCollage() {
     background.onload = () => {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        const targetWidth = canvas.width * 0.85; // 85% of canvas width
+        const targetWidth = canvas.width * 0.80; // Reduced width to 80% to account for slight squeeze
         const padding = 30; // Padding between images
         const startY = 100; // Starting y position for the first image
 
@@ -70,11 +70,11 @@ function createCollage() {
 
             img.onload = () => {
                 // Calculate aspect ratio from the original video feed
-                const videoAspectRatio = img.width / img.height;
+                const aspectRatio = img.width / img.height;
 
-                // Set width and height to match target dimensions while preserving aspect ratio
+                // Adjust width and height with a slight squeeze
                 const displayWidth = targetWidth;
-                const displayHeight = targetWidth / videoAspectRatio;
+                const displayHeight = displayWidth / aspectRatio;
 
                 // Calculate the x position to center the image horizontally within canvas
                 const offsetX = (canvas.width - displayWidth) / 2;
@@ -95,6 +95,7 @@ function createCollage() {
         });
     };
 }
+
 
 
 
