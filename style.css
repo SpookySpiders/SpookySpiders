@@ -13,7 +13,7 @@ html, body {
 body {
     background-color: black;
     background-image: linear-gradient(to bottom, black, #5f259f);
-    font-family: 'UnifrakturMaguntia', cursive;
+    font-family: 'UnifrakturMaguntia', cursive; /* You can change this to 'Fredericka the Great' if preferred */
     color: #ff7518;
     text-align: center;
     display: flex;
@@ -22,6 +22,11 @@ body {
     align-items: center;
     padding: 10px;
     overflow: hidden;
+}
+
+/* Heading Style */
+h1 {
+    padding-bottom: 20px; /* Add padding underneath the heading */
 }
 
 /* Countdown display */
@@ -38,18 +43,17 @@ body {
 
 /* Flash effect */
 .flash-active {
-    position: fixed; /* Covers the entire viewport */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
-    background-color: white; /* Bright white background */
-    opacity: 0; /* Start with no visibility */
-    transition: opacity 0.1s ease; /* Quick transition */
-    z-index: 10; /* Higher z-index to cover all elements */
-    pointer-events: none; /* Prevent interaction during flash */
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    z-index: 10;
+    pointer-events: none;
 }
-
 
 /* Photobooth Area */
 .photobooth {
@@ -74,13 +78,12 @@ video, canvas {
 /* Collage image display */
 #collage {
     display: none;
-    max-width: 55%; /* Make sure the image occupies only 60% of the screen */
+    max-width: 55%;
     height: auto;
-    margin: 0 auto; /* Center the collage */
-    margin-bottom: 30px; /* Add space below the image for buttons */
+    margin: 0 auto;
+    margin-bottom: 30px;
     border-radius: 10px;
 }
-
 
 /* Button Styling */
 .controls {
@@ -88,21 +91,22 @@ video, canvas {
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 40px; /* Adds space between the collage and buttons */
+    margin-top: 40px;
 }
 
 .controls button {
     background-color: #ff7518;
     color: white;
-    font-size: 1rem;
+    font-size: 1.5rem; /* Increase font size for more appeal */
+    font-family: 'Fredericka the Great', cursive; /* Change font to a more exciting style */
     border: none;
-    padding: 10px 15px;
+    padding: 15px; /* Increase padding for better touch targets */
     margin: 5px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 40%;
-    min-width: 100px;
+    width: 30%; /* Make the Start Photobooth button 30% width */
+    min-width: 150px; /* Minimum width for buttons */
 }
 
 .controls button:disabled {
