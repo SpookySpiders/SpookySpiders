@@ -69,15 +69,17 @@ function createCollage() {
             img.src = imageSrc;
 
             img.onload = () => {
-                // Calculate scale based on width to maintain aspect ratio
-                const aspectRatio = img.width / img.height;
-                const displayWidth = targetWidth;
-                const displayHeight = displayWidth / aspectRatio;
+                // Calculate aspect ratio from the original video feed
+                const videoAspectRatio = img.width / img.height;
 
-                // Calculate the x position to center the image horizontally
+                // Set width and height to match target dimensions while preserving aspect ratio
+                const displayWidth = targetWidth;
+                const displayHeight = targetWidth / videoAspectRatio;
+
+                // Calculate the x position to center the image horizontally within canvas
                 const offsetX = (canvas.width - displayWidth) / 2;
 
-                // Draw the image at the current y position
+                // Draw the image at the calculated position
                 context.drawImage(img, offsetX, currentY, displayWidth, displayHeight);
 
                 // Update currentY for the next image, adding padding
@@ -88,9 +90,12 @@ function createCollage() {
                     drawOverlay();
                 }
             };
+
+            img.onerror = (e) => console.error("Image load error:", e); // Error handler for troubleshooting
         });
     };
 }
+
 
 
 
