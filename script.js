@@ -52,7 +52,6 @@ async function startPhotoSequence() {
 
 
 
-
 function createCollage() {
     setCanvasDimensions();
 
@@ -63,35 +62,31 @@ function createCollage() {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
         const targetWidth = canvas.width * 0.80; // Target width for each image in the collage
-        const padding = 30; // Padding between images
-        const startY = 100; // Starting y position for the first image
+        const padding = 20; // Padding between images
+        const collageHeight = canvas.height * 0.80; // Top 80% of the canvas
+        const targetHeight = (collageHeight - 2 * padding) / 3; // Calculate height for each image with padding included
 
-        let currentY = startY;
-
-        imagesTaken.forEach((imageSrc, index) => {
+        imagesTaken.slice(0, 3).forEach((imageSrc, index) => { // Ensure exactly 3 images are used
             const img = new Image();
             img.src = imageSrc;
 
             img.onload = () => {
-                // Define cropping dimensions
                 const cropY = img.height * 0.40; // Start 40% down from the top
-                const croppedHeight = img.height - cropY; // Keep only the bottom 60%
+                const croppedHeight = img.height - cropY; // Bottom 60% of the image
+                const aspectRatio = img.width / croppedHeight;
 
-                // Calculate aspect ratio based on cropped portion
+                // Maintain the target width, adjust display height to preserve aspect ratio
                 const displayWidth = targetWidth;
-                const displayHeight = displayWidth * (croppedHeight / img.width); // Preserve aspect ratio of the cropped part
+                const displayHeight = displayWidth / aspectRatio;
 
-                // Center the image horizontally within the canvas
+                // Position images within the top 80% of the canvas, spaced with padding
                 const offsetX = (canvas.width - displayWidth) / 2;
+                const offsetY = (index * (targetHeight + padding)) + 100; // Starting at 100px with spacing
 
-                // Draw the cropped portion of the image
-                context.drawImage(img, 0, cropY, img.width, croppedHeight, offsetX, currentY, displayWidth, displayHeight);
-
-                // Update currentY for the next image, adding padding
-                currentY += displayHeight + padding;
-
-                // Draw overlay after the last image is loaded
-                if (index === imagesTaken.length - 1) {
+                context.drawImage(img, 0, cropY, img.width, croppedHeight, offsetX, offsetY, displayWidth, targetHeight);
+                
+                // Draw overlay after the last image
+                if (index === 2) {
                     drawOverlay();
                 }
             };
