@@ -88,7 +88,7 @@ video, canvas {
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
-    margin-top: 10px; /* Adds space between the collage and buttons */
+    margin-top: 40px; /* Adds space between the collage and buttons */
 }
 
 .controls button {
