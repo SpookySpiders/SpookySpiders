@@ -23,9 +23,13 @@ function initializeCamera() {
         .catch(err => alert('Error accessing webcam: ' + err));
 }
 
+
+
+
+
 // Function to handle the countdown, flash, and taking pictures
 async function startPhotoSequence() {
-    imagesTaken = [];
+    imagesTaken = [];  // Reset imagesTaken at the start of the sequence
     countdownDisplay.style.display = 'block';
 
     for (let i = 0; i < 3; i++) {
@@ -49,9 +53,6 @@ async function startPhotoSequence() {
     createCollage();
 }
 
-
-
-
 function createCollage() {
     setCanvasDimensions();
 
@@ -61,40 +62,41 @@ function createCollage() {
     background.onload = () => {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        const targetWidth = canvas.width * 0.80; // Target width for each image in the collage
-        const padding = 20; // Padding between images
-        const collageHeight = canvas.height * 0.80; // Top 80% of the canvas
-        const targetHeight = (collageHeight - 2 * padding) / 3; // Calculate height for each image with padding included
+        const targetWidth = canvas.width * 0.80;
+        const padding = 20;
+        const collageHeight = canvas.height * 0.80;
+        const targetHeight = (collageHeight - 2 * padding) / 3;
 
-        imagesTaken.slice(0, 3).forEach((imageSrc, index) => { // Ensure exactly 3 images are used
+        // Use only the first 3 images from imagesTaken, in case it has more
+        const imagesForCollage = imagesTaken.slice(0, 3);
+
+        imagesForCollage.forEach((imageSrc, index) => {
             const img = new Image();
             img.src = imageSrc;
 
             img.onload = () => {
-                const cropY = img.height * 0.40; // Start 40% down from the top
-                const croppedHeight = img.height - cropY; // Bottom 60% of the image
+                const cropY = img.height * 0.40;
+                const croppedHeight = img.height - cropY;
                 const aspectRatio = img.width / croppedHeight;
 
-                // Maintain the target width, adjust display height to preserve aspect ratio
                 const displayWidth = targetWidth;
                 const displayHeight = displayWidth / aspectRatio;
 
-                // Position images within the top 80% of the canvas, spaced with padding
                 const offsetX = (canvas.width - displayWidth) / 2;
-                const offsetY = (index * (targetHeight + padding)) + 100; // Starting at 100px with spacing
+                const offsetY = (index * (targetHeight + padding)) + 100;
 
                 context.drawImage(img, 0, cropY, img.width, croppedHeight, offsetX, offsetY, displayWidth, targetHeight);
-                
-                // Draw overlay after the last image
+
                 if (index === 2) {
                     drawOverlay();
                 }
             };
 
-            img.onerror = (e) => console.error("Image load error:", e); // Error handler for troubleshooting
+            img.onerror = (e) => console.error("Image load error:", e);
         });
     };
 }
+
 
 
 
