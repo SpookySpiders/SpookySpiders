@@ -74,7 +74,7 @@ video, canvas {
 /* Collage image display */
 #collage {
     display: none;
-    max-width: 40%; /* Make sure the image occupies only 60% of the screen */
+    max-width: 55%; /* Make sure the image occupies only 60% of the screen */
     height: auto;
     margin: 0 auto; /* Center the collage */
     margin-bottom: 10px; /* Add space below the image for buttons */
