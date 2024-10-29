@@ -32,6 +32,11 @@ async function startPhotoSequence() {
     imagesTaken = [];  // Reset imagesTaken at the start of the sequence
     countdownDisplay.style.display = 'block';
 
+    // Create a div for the flash effect
+    const flashDiv = document.createElement('div');
+    flashDiv.classList.add('flash-active'); // Add flash class
+    document.body.appendChild(flashDiv); // Append to body
+
     for (let i = 0; i < 3; i++) {
         for (let j = 3; j > 0; j--) {
             countdownDisplay.textContent = j;
@@ -39,9 +44,19 @@ async function startPhotoSequence() {
         }
 
         countdownDisplay.textContent = "";
-        document.body.style.backgroundColor = '#fff';
-        await new Promise(resolve => setTimeout(resolve, 100));
-        document.body.style.backgroundColor = 'black';
+
+        // Show the flash
+        flashDiv.style.opacity = '1'; // Make the flash visible
+
+        // Use requestAnimationFrame to ensure the rendering is smooth
+        await new Promise(resolve => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    flashDiv.style.opacity = '0'; // Fade it out
+                    resolve();
+                }, 100); // Flash duration
+            });
+        });
 
         // Capture image from video
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -49,9 +64,13 @@ async function startPhotoSequence() {
         await new Promise(resolve => setTimeout(resolve, 500));
     }
 
+    // Remove the flash effect after the sequence
+    document.body.removeChild(flashDiv); // Clean up the flash div
+
     countdownDisplay.style.display = 'none';
     createCollage();
 }
+
 
 function createCollage() {
     setCanvasDimensions();
