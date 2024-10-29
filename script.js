@@ -49,6 +49,8 @@ async function startPhotoSequence() {
     createCollage();
 }
 
+
+
 function createCollage() {
     setCanvasDimensions();
 
@@ -74,13 +76,16 @@ function createCollage() {
 
                 // Adjust width and height with a slight squeeze
                 const displayWidth = targetWidth;
+                const originalHeight = img.height;
+                const croppedHeight = originalHeight * 0.80; // Height after cropping top 20%
                 const displayHeight = displayWidth / aspectRatio;
 
                 // Calculate the x position to center the image horizontally within canvas
                 const offsetX = (canvas.width - displayWidth) / 2;
 
-                // Draw the image at the calculated position
-                context.drawImage(img, offsetX, currentY, displayWidth, displayHeight);
+                // Draw the image starting from the calculated y position to crop top 20%
+                const cropY = originalHeight * 0.20; // Start drawing from 20% down
+                context.drawImage(img, 0, cropY, img.width, originalHeight - cropY, offsetX, currentY, displayWidth, displayHeight);
 
                 // Update currentY for the next image, adding padding
                 currentY += displayHeight + padding;
@@ -95,6 +100,7 @@ function createCollage() {
         });
     };
 }
+
 
 
 
