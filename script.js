@@ -51,6 +51,8 @@ async function startPhotoSequence() {
 
 
 
+
+
 function createCollage() {
     setCanvasDimensions();
 
@@ -60,9 +62,8 @@ function createCollage() {
     background.onload = () => {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        const targetWidth = canvas.width * 0.80; // Reduced width to 80% to account for slight squeeze
+        const targetWidth = canvas.width * 0.80; // Target width for each image in the collage
         const padding = 30; // Padding between images
-        const collageHeight = canvas.height * 0.80; // Top 80% of the collage height
         const startY = 100; // Starting y position for the first image
 
         let currentY = startY;
@@ -72,31 +73,22 @@ function createCollage() {
             img.src = imageSrc;
 
             img.onload = () => {
-                // Calculate aspect ratio from the original video feed
-                const aspectRatio = img.width / img.height;
+                // Define cropping dimensions
+                const cropY = img.height * 0.40; // Start 40% down from the top
+                const croppedHeight = img.height - cropY; // Keep only the bottom 60%
 
-                // Adjust width and height without squeezing
+                // Calculate aspect ratio based on cropped portion
                 const displayWidth = targetWidth;
-                const originalHeight = img.height;
-                const croppedHeight = originalHeight * 0.60; // Keep the lower 60%
-                
-                // Calculate display height based on aspect ratio
-                const displayHeight = displayWidth / aspectRatio;
+                const displayHeight = displayWidth * (croppedHeight / img.width); // Preserve aspect ratio of the cropped part
 
-                // Calculate the x position to center the image horizontally within canvas
+                // Center the image horizontally within the canvas
                 const offsetX = (canvas.width - displayWidth) / 2;
 
-                // Draw the image starting from the calculated y position to crop top 40%
-                const cropY = originalHeight * 0.40; // Start drawing from 40% down
-                context.drawImage(img, 0, cropY, img.width, originalHeight - cropY, offsetX, currentY, displayWidth, displayHeight);
+                // Draw the cropped portion of the image
+                context.drawImage(img, 0, cropY, img.width, croppedHeight, offsetX, currentY, displayWidth, displayHeight);
 
                 // Update currentY for the next image, adding padding
                 currentY += displayHeight + padding;
-
-                // Ensure images do not exceed the collage height
-                if (currentY > startY + collageHeight) {
-                    console.warn("Images exceed the top 80% of the collage height.");
-                }
 
                 // Draw overlay after the last image is loaded
                 if (index === imagesTaken.length - 1) {
@@ -108,6 +100,7 @@ function createCollage() {
         });
     };
 }
+
 
 
 
