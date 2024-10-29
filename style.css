@@ -13,7 +13,7 @@ html, body {
 body {
     background-color: black;
     background-image: linear-gradient(to bottom, black, #5f259f);
-    font-family: 'UnifrakturMaguntia', cursive; /* You can change this to 'Fredericka the Great' if preferred */
+    font-family: 'UnifrakturMaguntia', cursive;
     color: #ff7518;
     text-align: center;
     display: flex;
@@ -62,7 +62,7 @@ h1 {
     max-width: 400px;
     height: 50vh;
     max-height: 300px;
-    margin-bottom: 15px;
+    margin-bottom: 40px; /* Increase this value for a wider gap */
 }
 
 video, canvas {
@@ -105,8 +105,8 @@ video, canvas {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 30%; /* Make the Start Photobooth button 30% width */
-    min-width: 150px; /* Minimum width for buttons */
+    width: 50%; /* Increase the width of the Start Photobooth button */
+    min-width: 200px; /* Minimum width for buttons */
 }
 
 .controls button:disabled {
