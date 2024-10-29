@@ -72,7 +72,17 @@ function createCollage() {
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                context.drawImage(img, x, y, width, height);
+                
+                // Calculate scaling to maintain aspect ratio
+                const scale = Math.min(width / img.width, height / img.height);
+                const newWidth = img.width * scale;
+                const newHeight = img.height * scale;
+
+                // Center the image within the target slot
+                const offsetX = x + (width - newWidth) / 2;
+                const offsetY = y + (height - newHeight) / 2;
+
+                context.drawImage(img, offsetX, offsetY, newWidth, newHeight);
                 imagesLoaded++;
 
                 // Check if all images are loaded to draw the overlay
