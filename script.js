@@ -59,11 +59,10 @@ function createCollage() {
     background.onload = () => {
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        // Define positions based on the analysis of the transparent overlay
         const positions = [
-            { x: 177, y: 66, width: 535, height: 331 },  // First empty space
-            { x: 177, y: 397, width: 535, height: 331 }, // Second empty space
-            { x: 177, y: 728, width: 535, height: 332 }  // Third empty space
+            { x: 120, y: 200, width: 840, height: 500 },   // First image position
+            { x: 120, y: 720, width: 840, height: 500 },   // Second image position (adjusted y)
+            { x: 120, y: 1240, width: 840, height: 500 }   // Third image position (adjusted y)
         ];
 
         let imagesLoaded = 0;
@@ -73,27 +72,10 @@ function createCollage() {
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-
-                // Maintain aspect ratio by calculating the target height
-                const aspectRatio = img.width / img.height;
-                const targetHeight = width / aspectRatio;
-
-                // Ensure image fills the width, and crop height from the top if necessary
-                context.drawImage(
-                    img,
-                    0,                    // Source X (from the left)
-                    Math.max(0, (img.height - targetHeight) / 2), // Crop from top if needed
-                    img.width,            // Source width (full)
-                    img.height,           // Source height (full)
-                    x,                    // Destination X (position in canvas)
-                    y,                    // Destination Y (position in canvas)
-                    width,                // Destination width (to fit empty space)
-                    height                // Destination height (to fit empty space)
-                );
-
+                context.drawImage(img, x, y, width, height);
                 imagesLoaded++;
 
-                // When all images are loaded, draw the overlay
+                // Check if all images are loaded to draw the overlay
                 if (imagesLoaded === imagesTaken.length) {
                     drawOverlay();
                 }
@@ -102,10 +84,10 @@ function createCollage() {
     };
 }
 
-// Function to draw the overlay on top of the collage
+// Function to draw the overlay
 function drawOverlay() {
     const overlay = new Image();
-    overlay.src = 'IMG_2042_transparent.png';  // Use the transparent PNG
+    overlay.src = 'IMG_2042.PNG';
     overlay.onload = () => {
         context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
 
@@ -120,7 +102,6 @@ function drawOverlay() {
         resetPhotoButton.style.display = 'inline';
     };
 }
-
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
