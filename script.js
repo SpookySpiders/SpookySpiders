@@ -72,7 +72,24 @@ function createCollage() {
             img.src = image;
             img.onload = () => {
                 const { x, y, width, height } = positions[index];
-                context.drawImage(img, x, y, width, height);
+
+                // Calculate aspect ratio to avoid stretching
+                const aspectRatio = img.width / img.height;
+                const targetHeight = width / aspectRatio;
+
+                // Draw the image with cropping on top if necessary
+                context.drawImage(
+                    img,
+                    0,                // Source X (start at the top)
+                    Math.max(0, img.height - targetHeight) / 2, // Crop from the top as needed
+                    img.width,        // Source width
+                    img.height,       // Source height
+                    x,                // Destination X
+                    y,                // Destination Y
+                    width,            // Destination width
+                    height            // Destination height
+                );
+
                 imagesLoaded++;
 
                 // Check if all images are loaded to draw the overlay
