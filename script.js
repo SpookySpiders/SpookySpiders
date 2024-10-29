@@ -62,6 +62,7 @@ function createCollage() {
 
         const targetWidth = canvas.width * 0.80; // Reduced width to 80% to account for slight squeeze
         const padding = 30; // Padding between images
+        const collageHeight = canvas.height * 0.80; // Top 80% of the collage height
         const startY = 100; // Starting y position for the first image
 
         let currentY = startY;
@@ -77,18 +78,23 @@ function createCollage() {
                 // Adjust width and height with a slight squeeze
                 const displayWidth = targetWidth;
                 const originalHeight = img.height;
-                const croppedHeight = originalHeight * 0.80; // Height after cropping top 20%
-                const displayHeight = displayWidth / aspectRatio;
+                const croppedHeight = originalHeight * 0.60; // Height after cropping top 40%
+                const displayHeight = (displayWidth / aspectRatio) * (croppedHeight / originalHeight); // Maintain aspect ratio after cropping
 
                 // Calculate the x position to center the image horizontally within canvas
                 const offsetX = (canvas.width - displayWidth) / 2;
 
-                // Draw the image starting from the calculated y position to crop top 20%
-                const cropY = originalHeight * 0.20; // Start drawing from 20% down
+                // Draw the image starting from the calculated y position to crop top 40%
+                const cropY = originalHeight * 0.40; // Start drawing from 40% down
                 context.drawImage(img, 0, cropY, img.width, originalHeight - cropY, offsetX, currentY, displayWidth, displayHeight);
 
                 // Update currentY for the next image, adding padding
                 currentY += displayHeight + padding;
+
+                // Ensure images do not exceed the collage height
+                if (currentY > startY + collageHeight) {
+                    console.warn("Images exceed the top 80% of the collage height.");
+                }
 
                 // Draw overlay after the last image is loaded
                 if (index === imagesTaken.length - 1) {
