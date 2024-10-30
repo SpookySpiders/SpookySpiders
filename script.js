@@ -72,6 +72,11 @@ async function startPhotoSequence() {
 }
 
 
+
+
+
+
+
 function createCollage() {
     setCanvasDimensions();
 
@@ -79,14 +84,15 @@ function createCollage() {
     background.src = 'IMG_2043.PNG';
 
     background.onload = () => {
+        // Draw the background image
         context.drawImage(background, 0, 0, canvas.width, canvas.height);
 
-        const targetWidth = canvas.width * 0.80;
-        const padding = 20;
+        const targetWidth = canvas.width * 0.70; // Make each image 10% narrower (70% instead of 80%)
+        const padding = 20; // Space between each image in the collage
         const collageHeight = canvas.height * 0.80;
-        const targetHeight = (collageHeight - 2 * padding) / 3;
+        const targetHeight = (collageHeight - 2 * padding) / 3; // Divide collage space for 3 images
 
-        // Use only the first 3 images from imagesTaken, in case it has more
+        // Limit the collage to the first 3 images taken
         const imagesForCollage = imagesTaken.slice(0, 3);
 
         imagesForCollage.forEach((imageSrc, index) => {
@@ -94,24 +100,28 @@ function createCollage() {
             img.src = imageSrc;
 
             img.onload = () => {
-                const cropY = img.height * 0.20; // Start cropping 20% down from the top
-                const croppedHeight = img.height * 0.60; // Height is 60% (removing 20% from top and bottom)
+                const cropY = img.height * 0.20; // Crop 20% from the top
+                const croppedHeight = img.height * 0.60; // Crop middle 60% (20% top and 20% bottom)
                 const aspectRatio = img.width / croppedHeight;
 
+                // Set display dimensions for the collage image
                 const displayWidth = targetWidth;
                 const displayHeight = displayWidth / aspectRatio;
 
+                // Center the image horizontally and position vertically with padding
                 const offsetX = (canvas.width - displayWidth) / 2;
                 const offsetY = (index * (targetHeight + padding)) + 100;
 
+                // Draw the cropped image section onto the canvas
                 context.drawImage(
                     img,
-                    0, cropY,                     // Start cropping from (0, cropY)
-                    img.width, croppedHeight,      // Crop width and height
-                    offsetX, offsetY,              // Display position on canvas
-                    displayWidth, targetHeight     // Display size on canvas
+                    0, cropY, // Start cropping 20% down
+                    img.width, croppedHeight, // Crop width and height
+                    offsetX, offsetY, // Position in the collage
+                    displayWidth, targetHeight // Final display dimensions
                 );
 
+                // After the last image, draw the overlay and show collage
                 if (index === 2) {
                     drawOverlay();
                 }
@@ -121,6 +131,7 @@ function createCollage() {
         });
     };
 }
+
 
 
 
