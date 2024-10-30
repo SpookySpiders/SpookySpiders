@@ -94,8 +94,8 @@ function createCollage() {
             img.src = imageSrc;
 
             img.onload = () => {
-                const cropY = img.height * 0.40;
-                const croppedHeight = img.height - cropY;
+                const cropY = img.height * 0.20; // Start cropping 20% down from the top
+                const croppedHeight = img.height * 0.60; // Height is 60% (removing 20% from top and bottom)
                 const aspectRatio = img.width / croppedHeight;
 
                 const displayWidth = targetWidth;
@@ -104,7 +104,13 @@ function createCollage() {
                 const offsetX = (canvas.width - displayWidth) / 2;
                 const offsetY = (index * (targetHeight + padding)) + 100;
 
-                context.drawImage(img, 0, cropY, img.width, croppedHeight, offsetX, offsetY, displayWidth, targetHeight);
+                context.drawImage(
+                    img,
+                    0, cropY,                     // Start cropping from (0, cropY)
+                    img.width, croppedHeight,      // Crop width and height
+                    offsetX, offsetY,              // Display position on canvas
+                    displayWidth, targetHeight     // Display size on canvas
+                );
 
                 if (index === 2) {
                     drawOverlay();
@@ -115,6 +121,7 @@ function createCollage() {
         });
     };
 }
+
 
 
 
